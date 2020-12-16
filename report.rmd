@@ -27,17 +27,6 @@ knitr::opts_chunk$set(
 library(mice)
 ```
 
-# Imputing the data
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
-df <- read.csv('./data/preproc_outputs/data_before_imp.csv')
-imp = mice(df, m = 5, method = "cart")
-df = complete(imp)
-
-# saving csv for reference
-write.csv(df,'./data/data.csv')
-```
-
 # Function to plot
 
 \footnotesize
