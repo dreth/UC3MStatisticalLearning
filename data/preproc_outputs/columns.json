@@ -1,0 +1,21 @@
+{
+    "Time": "year",
+    "Time Code": "year_code",
+    "Country Name": "country_name",
+    "Country Code": "country_code",
+    "GDP (current US$)": "gdp",
+    "Foreign direct investment, net inflows (BoP, current US$)": "foreign_inv_inflows",
+    "Life expectancy at birth, total (years)": "life_exp",
+    "Exports of goods and services (% of GDP)": "exports_perc_gdp",
+    "Inflation, consumer prices (annual %)": "inflation_perc",
+    "Compulsory education, duration (years)": "education_years",
+    "Government expenditure on education, total (% of GDP)": "education_perc_gdp",
+    "Gross domestic savings (% of GDP)": "gds_perc_gdp",
+    "Gross savings (% of GDP)": "gross_savings_perc_gdp",
+    "International tourism, number of arrivals": "int_tourism_arrivals",
+    "International tourism, receipts (current US$)": "int_tourism_receipts",
+    "GNI (current US$)": "gni",
+    "Individuals using the Internet (% of population)": "perc_internet_users",
+    "HDI": "hdi",
+    "Human development index as a category (1-4)": "hdi_cat"
+}

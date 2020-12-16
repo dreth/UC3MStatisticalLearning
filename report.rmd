@@ -1,0 +1,120 @@
+---
+title: 'Statistical Learning Final Project Plots'
+author: 'Daniel Alonso'
+date: 'December 19th, 2020'
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 4
+  includes:
+    in_header: latex/header.tex
+    before_body: latex/before_body.tex
+    after_body: latex/after_body.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    collapse = TRUE,
+    comment = '#>',
+    fig.path = './figures/'
+)
+```
+
+# Importing libraries
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+library(mice)
+```
+
+# Imputing the data
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+df <- read.csv('./data/preproc_outputs/data_before_imp.csv')
+imp = mice(df, m = 5, method = "cart")
+df = complete(imp)
+
+# saving csv for reference
+write.csv(df,'./data/data.csv')
+```
+
+# Function to plot
+
+\footnotesize
+
+```{r , echo=TRUE, warning=FALSE, message=FALSE}
+plots <- function(dataset ,col, type, density=TRUE, bins='default', xtick_angles='default') {
+    var <- dataset %>% dplyr::select(col)
+    if (bins == 'default') {bins = rep(10,3)}
+    if (xtick_angles == 'default') {xtick_angles = rep(90,3)}
+    if (type == 'boxplot') {
+        p1 <- dataset %>% ggplot(aes(x=var[,1])) +
+            geom_boxplot() +
+            ggtitle(str_interp("${col}")) +
+            theme(axis.title.x=element_blank(),axis.text.y=element_blank())
+        p2 <- dataset %>% ggplot(aes(x=var[,1], fill=continent)) +
+            geom_boxplot() +
+            ggtitle(str_interp("${col} grouped by continent")) +
+            theme(axis.title.x=element_blank(),axis.text.y=element_blank())
+        p3 <- dataset %>% ggplot(aes(x=var[,1], fill=development)) +
+            geom_boxplot() +
+            ggtitle(str_interp("${col} grouped by development")) +
+            theme(axis.title.x=element_blank(),axis.text.y=element_blank())
+    } else if (type == 'hist') {
+        p1 <- dataset %>% ggplot(aes(x=var[,1])) +
+            geom_histogram(aes(y=..density..), bins=bins[1]) +
+            geom_density() +
+            ggtitle(str_interp("${col}")) +
+            theme(axis.title.x=element_blank(),
+                  axis.text.x = element_text(angle = xtick_angles[1]))
+        if (density == FALSE) {
+        p2 <- dataset %>% ggplot(aes(x=var[,1], fill=continent)) +
+            geom_histogram(show.legend = FALSE,bins=bins[2]) +
+            ggtitle(str_interp("${col} by continent")) +
+            theme(axis.title.x=element_blank(),
+                  axis.text.x = element_text(angle = xtick_angles[2])) +
+            facet_wrap(~continent, nrow = 1)
+        p3 <- dataset %>% ggplot(aes(x=var[,1], fill=development)) +
+            geom_histogram(show.legend = FALSE,bins=bins[3]) +
+            ggtitle(str_interp("${col} by development")) +
+            theme(axis.title.x=element_blank(),
+                  axis.text.x = element_text(angle = xtick_angles[3])) +
+            facet_wrap(~development, nrow = 1)
+        } else {
+        p2 <- dataset %>% ggplot(aes(x=var[,1], fill=continent)) +
+            geom_histogram(show.legend = FALSE,bins=bins[2],aes(y=..density..)) +
+            geom_density(show.legend = FALSE) +
+            ggtitle(str_interp("${col} by continent")) +
+            theme(axis.title.x=element_blank(),
+                  axis.text.x = element_text(angle = xtick_angles[2])) +
+            facet_wrap(~continent, nrow = 1)
+        p3 <- dataset %>% ggplot(aes(x=var[,1], fill=development)) +
+            geom_histogram(show.legend = FALSE,bins=bins[3],aes(y=..density..)) +
+            geom_density(show.legend = FALSE) +
+            ggtitle(str_interp("${col} by development")) +
+            theme(axis.title.x=element_blank(),
+                  axis.text.x = element_text(angle = xtick_angles[3])) +
+            facet_wrap(~development, nrow = 1)
+        }} 
+    grid.arrange(p1,p2,p3, nrow=3)
+}
+```
+
+\normalsize
+
+# Columns
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+names(df)
+```
+
+# Plots
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+plots(dataset=df, col='total_cases',type='boxplot')
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+plots(dataset=df, col='total_cases',type='hist', 
+      density=FALSE, bins = c(80,15,15),xtick_angles=c(0,30,20))
+```
