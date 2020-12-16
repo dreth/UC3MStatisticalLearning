@@ -84,7 +84,8 @@ plots <- function(dataset ,col, type, density=TRUE, bins='default', xtick_angles
             theme(axis.title.x=element_blank(),
                   axis.text.x = element_text(angle = xtick_angles[3])) +
             facet_wrap(~development, nrow = 1)
-        }} 
+        }
+    } 
     grid.arrange(p1,p2,p3, nrow=3)
 }
 ```
