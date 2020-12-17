@@ -5,7 +5,6 @@
     "Country Code": "country_code",
     "GDP (current US$)": "gdp",
     "Foreign direct investment, net inflows (BoP, current US$)": "foreign_inv_inflows",
-    "Life expectancy at birth, total (years)": "life_exp",
     "Exports of goods and services (% of GDP)": "exports_perc_gdp",
     "Inflation, consumer prices (annual %)": "inflation_perc",
     "Compulsory education, duration (years)": "education_years",
