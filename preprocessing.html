@@ -14259,17 +14259,17 @@ a.anchor-link {
 
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Statistical-learning-final-project">Statistical learning final project<a class="anchor-link" href="#Statistical-learning-final-project">&#182;</a></h1>
-</div>
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="dataset-selection-and-preprocessing">dataset selection and preprocessing<a class="anchor-link" href="#dataset-selection-and-preprocessing">&#182;</a></h2>
+<h1 id="Statistical-learning-final-project:-dataset-selection-and-preprocessing"><strong>Statistical learning final project</strong>: dataset selection and preprocessing<a class="anchor-link" href="#Statistical-learning-final-project:-dataset-selection-and-preprocessing">&#182;</a></h1>
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h3 id="Daniel-A.">Daniel A.<a class="anchor-link" href="#Daniel-A.">&#182;</a></h3><h3 id="UID:-100444499">UID: 100444499<a class="anchor-link" href="#UID:-100444499">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Importing-Libraries">Importing Libraries<a class="anchor-link" href="#Importing-Libraries">&#182;</a></h3>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
@@ -14293,7 +14293,12 @@ a.anchor-link {
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Prior to importing the data I have made a find and replace with the following regex: \"\s[[\w\S]{1,}]\", in order to remove some tags that the world bank databank adds to their columns</p>
+<h3 id="Importing-data">Importing data<a class="anchor-link" href="#Importing-data">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Prior to importing the data, I have matches with the following regex: \"\s$$[\w\S]{1,}$$\", in order to remove some tags that the world bank databank adds to their columns</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -14311,6 +14316,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Initial-modifications-and-selection-of-range-of-rows">Initial modifications and selection of range of rows<a class="anchor-link" href="#Initial-modifications-and-selection-of-range-of-rows">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14341,6 +14351,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="Years-imported">Years imported<a class="anchor-link" href="#Years-imported">&#182;</a></h4>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14378,6 +14393,11 @@ a.anchor-link {
 
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Filling-NAs-with-previous-year's-data">Filling NAs with previous year's data<a class="anchor-link" href="#Filling-NAs-with-previous-year's-data">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14393,8 +14413,25 @@ a.anchor-link {
 <span class="c1"># the previous years&#39; data still serves us a purpose for the analysis</span>
 <span class="n">for</span> <span class="n">year</span> <span class="n">in</span> <span class="n">years</span><span class="o">:</span>   
     <span class="n">dfs</span><span class="p">[</span><span class="m">2020</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="m">2020</span><span class="p">]</span><span class="nf">.fillna</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="n">year</span><span class="p">])</span>
+</pre></div>
 
-<span class="c1"># removing columns where there&#39;s too many NANs</span>
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Removing-columns-with-more-than-45-NAs">Removing columns with more than 45 NAs<a class="anchor-link" href="#Removing-columns-with-more-than-45-NAs">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-r"><pre><span></span><span class="c1"># removing columns where there&#39;s too many NANs</span>
 <span class="n">cols_to_keep</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">df</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">for</span> <span class="n">col</span><span class="p">,</span><span class="n">val</span> <span class="n">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="m">2020</span><span class="p">]</span><span class="n">.columns</span><span class="p">,</span><span class="n">dfs</span><span class="p">[</span><span class="m">2020</span><span class="p">]</span><span class="nf">.isna</span><span class="p">()</span><span class="nf">.sum</span><span class="p">())</span><span class="o">:</span>
@@ -14408,6 +14445,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Removing-countries-with-more-than-4-NAs">Removing countries with more than 4 NAs<a class="anchor-link" href="#Removing-countries-with-more-than-4-NAs">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14435,6 +14477,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Obtaining-HDI-per-country-from-Wikipedia">Obtaining HDI per country from Wikipedia<a class="anchor-link" href="#Obtaining-HDI-per-country-from-Wikipedia">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14495,6 +14542,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Adding-HDI-to-the-dataframe">Adding HDI to the dataframe<a class="anchor-link" href="#Adding-HDI-to-the-dataframe">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14517,6 +14569,11 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Fixing-columns'-types-and-names">Fixing columns' types and names<a class="anchor-link" href="#Fixing-columns'-types-and-names">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
@@ -14542,23 +14599,6 @@ a.anchor-link {
 
 <span class="c1"># renaming columns as the names are too long</span>
 <span class="n">df.columns</span> <span class="o">=</span> <span class="n">colnames</span>
-
-<span class="c1"># function to construct target variable</span>
-<span class="n">def</span> <span class="nf">hdi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">:</span>
-    <span class="n">conds</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="m">1</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.8</span><span class="p">,</span>
-        <span class="m">2</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.7</span> <span class="n">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="m">0.799</span><span class="p">,</span>
-        <span class="m">3</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.55</span> <span class="n">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="m">0.699</span><span class="p">,</span>
-        <span class="m">4</span><span class="o">:</span><span class="n">x</span> <span class="o">&lt;</span><span class="m">0.55</span>
-    <span class="p">}</span>
-    <span class="n">for</span> <span class="n">cat</span><span class="p">,</span><span class="n">cond</span> <span class="n">in</span> <span class="nf">conds.items</span><span class="p">()</span><span class="o">:</span> 
-        <span class="n">if</span> <span class="n">cond</span> <span class="o">==</span> <span class="n">True</span><span class="o">:</span>
-            <span class="n">return</span> <span class="n">cat</span> 
-
-<span class="n">df</span><span class="p">[</span><span class="s">&#39;hdi_cat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;hdi&#39;</span><span class="p">]</span><span class="nf">.apply</span><span class="p">(</span><span class="n">lambda</span> <span class="n">x</span><span class="o">:</span> <span class="nf">hdi</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-
-<span class="c1"># saving the dataset before imputing</span>
-<span class="nf">df.to_csv</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/data_before_imp.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14566,13 +14606,52 @@ a.anchor-link {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Constructing-categorical-target-variable">Constructing categorical target variable<a class="anchor-link" href="#Constructing-categorical-target-variable">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-r"><pre><span></span><span class="c1"># function to construct target variable</span>
+<span class="n">def</span> <span class="nf">hdi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">:</span>
+    <span class="n">conds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;very high&#39;</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.8</span><span class="p">,</span>
+        <span class="s">&#39;high&#39;</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.7</span> <span class="n">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="m">0.799</span><span class="p">,</span>
+        <span class="s">&#39;medium&#39;</span><span class="o">:</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="m">0.55</span> <span class="n">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="m">0.699</span><span class="p">,</span>
+        <span class="s">&#39;low&#39;</span><span class="o">:</span><span class="n">x</span> <span class="o">&lt;</span><span class="m">0.55</span>
+    <span class="p">}</span>
+    <span class="n">for</span> <span class="n">cat</span><span class="p">,</span><span class="n">cond</span> <span class="n">in</span> <span class="nf">conds.items</span><span class="p">()</span><span class="o">:</span> 
+        <span class="n">if</span> <span class="n">cond</span> <span class="o">==</span> <span class="n">True</span><span class="o">:</span>
+            <span class="n">return</span> <span class="n">cat</span> 
+
+<span class="n">df</span><span class="p">[</span><span class="s">&#39;hdi_cat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;hdi&#39;</span><span class="p">]</span><span class="nf">.apply</span><span class="p">(</span><span class="n">lambda</span> <span class="n">x</span><span class="o">:</span> <span class="nf">hdi</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Exporting-the-data-from-Python-into-R-to-impute-the-few-missing-values-left">Exporting the data from Python into R to impute the few missing values left<a class="anchor-link" href="#Exporting-the-data-from-Python-into-R-to-impute-the-few-missing-values-left">&#182;</a></h3>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># dumping the col information into a json</span>
+<div class=" highlight hl-r"><pre><span></span><span class="c1"># saving the dataset before imputing</span>
+<span class="nf">df.to_csv</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/data_before_imp.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># dumping the col information into a json</span>
 <span class="n">col_dict</span><span class="p">[</span><span class="s">&#39;Human development index as a category (1-4)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;hdi_cat&#39;</span>
 
 <span class="n">with</span> <span class="nf">open</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/columns.json&#39;</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="o">:</span>
@@ -14587,7 +14666,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># importing mice library to impute the data</span>
@@ -14614,33 +14693,6 @@ a.anchor-link {
 
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>
-Attaching package: ‘mice’
-
-
-The following object is masked from ‘package:stats’:
-
-    filter
-
-
-The following objects are masked from ‘package:base’:
-
-    cbind, rbind
-
-
-Warning message:
-“Number of logged events: 5”
-</pre>
-</div>
-</div>
 
 <div class="jp-OutputArea-child">
 
@@ -14676,6 +14728,19 @@ Warning message:
   5   3  foreign_inv_inflows  life_exp  exports_perc_gdp  inflation_perc  education_years  education_perc_gdp  gds_perc_gdp  gross_savings_perc_gdp  int_tourism_arrivals  int_tourism_receipts
   5   4  foreign_inv_inflows  life_exp  exports_perc_gdp  inflation_perc  education_years  education_perc_gdp  gds_perc_gdp  gross_savings_perc_gdp  int_tourism_arrivals  int_tourism_receipts
   5   5  foreign_inv_inflows  life_exp  exports_perc_gdp  inflation_perc  education_years  education_perc_gdp  gds_perc_gdp  gross_savings_perc_gdp  int_tourism_arrivals  int_tourism_receipts
+</pre>
+</div>
+</div>
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>Warning message:
+“Number of logged events: 6”
 </pre>
 </div>
 </div>
