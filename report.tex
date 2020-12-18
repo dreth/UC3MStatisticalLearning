@@ -101,16 +101,23 @@ providing quite interesting and relevant information.
 
 NOTE: \normalsize
 
-\textbf{\textcolor{blue}{blue}} = used for training/predicting
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\textcolor{blue}{blue}} = used for training/predicting
+\item
+  \textbf{\textcolor{red}{red}} = target variable
+\item
+  \textbf{\textcolor{green}{green}} = ID variables
+\item
+  \textbf{\textcolor{violet}{purple}} = variables excluded as either
+  they were \emph{components} of HDI or they were 100\% correlated to
+  another variable (like GNI/GDP, which are both 100\% correlated and
+  GNI is a component of HDI)
+\end{itemize}
 
-\textbf{\textcolor{red}{red}} = target variable
-
-\textbf{\textcolor{green}{green}} = ID variables
-
-\textbf{\textcolor{violet}{purple}} = variables excluded as either they
-were \emph{components} of HDI or they were 100\% correlated to another
-variable (like GNI/GDP, which are both 100\% correlated and GNI is a
-component of HDI)
+Variables in the original dataset as constructed using the World Bank
+Databank tool (variables were renamed):
 
 \begin{itemize}
 \tightlist
@@ -186,29 +193,74 @@ component of HDI)
   \textcolor{red}{\textbf{hdi\_cat}}: Human development index as a
   category
 \item
-  \textcolor{purple}{\textbf{life\_exp}}: Life expectancy at birth,
+  \textcolor{violet}{\textbf{life\_exp}}: Life expectancy at birth,
   total (years)
 \item
-  \textcolor{purple}{\textbf{gdp}}: GDP (current US\$)
+  \textcolor{violet}{\textbf{gdp}}: GDP (current US\$)
 \item
-  \textcolor{purple}{\textbf{gni}}: GNI (current US\$)
+  \textcolor{violet}{\textbf{gni}}: GNI (current US\$)
 \item
-  \textcolor{purple}{\textbf{fertility\_rate}}: Fertility rate, total
+  \textcolor{violet}{\textbf{fertility\_rate}}: Fertility rate, total
   (births per woman)
 \end{itemize}
 
 \newpage
 
-\hypertarget{preprocessing}{%
-\section{Preprocessing}\label{preprocessing}}
+\hypertarget{the-target-variable}{%
+\subsubsection{The target variable}\label{the-target-variable}}
 
-The data cleanup and preliminary feature engineering was done in Python.
+As all these variables could perhaps tell us how developed a country is,
+we used a constructed categorized Human development index variable in
+order to classify the countries using the above variables (unless stated
+otherwise by their colour) as training variables.
+
+The criteria for constructing the categorical variable \emph{hdi\_cat}
+was the following:
+
+\begin{itemize}
+    \item Very high: HDI above 0.8
+    \item High: HDI between 0.7 and 0.799
+    \item Medium: HDI between 0.55 and 0.699
+    \item Low: HDI under 0.55
+  \end{itemize}
+
+This categorization is emulated from Wikipedia's construction and uses
+the same ranges as used in every Wikipedia article referencing HDI.
+
+\hypertarget{data-preprocessing}{%
+\section{Data preprocessing}\label{data-preprocessing}}
+
+The data cleanup and preliminary feature engineering was done in Python
+and the imputation was then done in R within the same Jupyter Notebook
+(called \emph{preprocessing.ipynb}).
 
 \hypertarget{methodology-and-steps}{%
 \subsection{Methodology and steps}\label{methodology-and-steps}}
 
-1 - Prior to importing there was a search within the \emph{.csv} file
-with the following regex:
-\texttt{\textbackslash{}"\textbackslash{}s\textbackslash{}{[}{[}\textbackslash{}w\textbackslash{}S{]}\{1,\}\textbackslash{}{]}\textbackslash{}"}
+\begin{enumerate}
+  \item Prior to importing there was a search within the .csv file with the following regex: \begin{verbatim} \s\[[\w\S]{1,}\] \end{verbatim} as a find and replace and removing every instance of it. This regex matches a metadata tag that the world bank uses in their dataset. Following this step, the data was imported.
+
+  \item Metadata at the end of the dataset was removed, the dataset was filtered excluding these region codes (the codes were excluded as they were country aggregates, and we're only interested in the countries themselves).
+
+  \item The year column was converted to integer and the '..' values (which represent NAs in the World bank databank) were replaced for numpy NaNs and then the values were sorted by year and country name.
+
+  \item Data missing in later years (2020, 2019) was backfilled with data from previous years, as it still fits our modelling purposes. The data that goes the furthest back is from ~18 years prior, so 2002.
+
+  \item Columns with more than 45 NA values were removed as this represents roughly 25% of the countries in question.
+
+  \item The life expectancy, GDP, GNI and fertility rate columns were removed as these are either components of HDI or (in the case of fertility rate) are 100% correlated with other elements in our dataset (crude birth rate in this particular case).
+
+  \item We scrape Wikipedia in order to obtain an updated metric on HDI estimates for each country. We also scrape it to obtain the alpha-3 3166 codes for each country. The data was obtained with the purpose of making it easier to join with the dataset obtained from the World Bank, as joining by country names is not reliable enough (misses ~20 countries which the alpha-3 codes do not).
+
+  \item We add HDI to the main dataframe
+
+  \item Numerical columns were converted into floats and column names were simplified for easier future manipulation.
+
+  \item The categorical target variable is constructed as explained previously in this step.
+
+  \item The data is then exported as a csv, along with a json file that shows how the columns were renamed
+
+  \item The data is then imported in an R cell and a MICE imputation is performed using the 'cart' method with m = 5 in order to impute the very few missing values remaining.
+\end{enumerate}
 
 \end{document}
