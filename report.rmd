@@ -214,12 +214,13 @@ The data cleanup and preliminary feature engineering was done in Python and the 
 
 The plots of choice for visually analyzing the variables prior to any processing has been Boxplots and Histograms/density plots all looked at individually and categorized by *hdi_cat* which is our categorical target variable (HDI).
 
-Given the space constraints of this report, if a plot for a specific variable is not shown here but talked about or mentioned, it will be shown in the *eda.ipynb* and *eda.html* notebook and notebook export used to perform the visual analysis.
+Given the space constraints of this report, if a plot for a specific variable is not shown here but talked about or mentioned, it will be shown in the *eda.ipynb* and *eda.html* notebook and notebook export used to perform the visual analysis. Only variables which are used in the modelling section will be visually analyzed and described.
 
 ### Significantly right-skewed variables
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.show='hide', results='hide', fig.height=14, fig.width=12}
-plots(dataset=df, col=cols[1], hist=c(TRUE,TRUE), density=c(FALSE,FALSE), xtick_angles=c(50,50) ,bins=c(30,30), fw=TRUE, sep=FALSE, savefig=c(TRUE,12,12), filename='./img/foreign_inv_inflows.png')
+col = 'foreign_inv_inflows'
+plots(dataset=df, col=col, hist=c(TRUE,TRUE), density=c(FALSE,FALSE), xtick_angles=c(50,50) ,bins=c(30,30), fw=TRUE, sep=FALSE, savefig=c(TRUE,12,12), filename=str_interp('./img/${col}.png'))
 ```
 
 ![Foreign Investment Inflows](./img/foreign_inv_inflows.png){width=60%}
@@ -232,6 +233,11 @@ The following variables showed a similarly right-skewed shape with significant o
   - **greenhouse_gas_em**: Just like with the previous two variables, fossil fuel use, meat production and economic activities like such produce huge amounts of greenhouse gases, and the more developed a country is, the more emissions it produces. However, this one is a bit less strongly inclined like the previous two. We can clearly see that there's many less developed countries with a high level of emissions. A notorious example of this is China, which is the 2nd country with the most emissions and falls under the high category of HDI, by far exceeding the emission levels of most countries with very high HDI countries.
 
 ### Education variables
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.show='hide', results='hide', fig.height=14, fig.width=12}
+col = 'education_years'
+plots(dataset=df, col=col, hist=c(TRUE,FALSE), density=c(TRUE,TRUE), xtick_angles=c(50,50) ,bins=c(20,20), fw=TRUE, sep=FALSE, savefig=c(TRUE,12,12), filename=str_interp('./img/${col}.png'))
+```
 
 ![Years of compulsory education](./img/education_years.png){width=60%}
 
@@ -251,4 +257,13 @@ These variables might have some skewness towards more tails or longer tails than
 
 These variables seemed like quite appropriate to me for predicting HDI or any other development measure, as they could potentially be huge differentiators between the different HDI groups.
 
- - **perc_internet_users**: The percentage of internet users in each group is a surprisingly good differentiator as mentioned previously. We can see that, sure there's countries in each group with percentages that resemble other groups, but the difference in variability among groups is massive. Where the consistency of low HDI countries vs very high and high HDI countries is *hugely* different. We can see the standard deviations (and means) per group follow an interesting ladder: the $sigma_{low} \approx 0.714$, $sigma_{medium} \approx 2.532$, $sigma_{high} \approx 4.908$, $sigma_{very high} \approx 20.382$.
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.show='hide', results='hide', fig.height=14, fig.width=12}
+col = 'access_to_electricity'
+plots(dataset=df, col=col, hist=c(TRUE,TRUE), density=c(FALSE,FALSE), xtick_angles=c(50,50) ,bins=c(30,30), fw=TRUE, sep=FALSE, savefig=c(TRUE,12,12), filename=str_interp('./img/${col}.png'))
+```
+
+![Percentage of population with access to electricity](./img/access_to_electricity.png){width=60%}
+
+  - **perc_internet_users**: The percentage of internet users in each group is a surprisingly good differentiator as mentioned previously. We can see that, sure there's countries in each group with percentages that resemble other groups, but the difference in variability among groups is massive. Where the consistency of low HDI countries vs very high and high HDI countries is significantly different. We can see the standard deviations (and means) per group follow an interesting ladder: $\sigma_{low} \approx 0.714$, $\sigma_{medium} \approx 2.532$, $\sigma_{high} \approx 4.908$, $\sigma_{very\_high} \approx 20.382$.
+  - **access_to_electricity**: another Hugely differentiating variable with similar properties to *perc_internet_users*. We can see a clear division where if the country is in the very high HDI category, it will almost certainly have near full coverage in its electricity supply to its population. Countries in the high category are also clearly differentiated with the rest while also maintaining quite high rates. Medium HDI countries show a huge variability in their coverage, lower than high HDI countries but higher than low HDI countries. Low HDI countries show a significantly lower but clearly divided coverage with medium HDI countries.
+  - **agricultural_land**: 

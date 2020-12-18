@@ -280,7 +280,8 @@ target variable (HDI).
 Given the space constraints of this report, if a plot for a specific
 variable is not shown here but talked about or mentioned, it will be
 shown in the \emph{eda.ipynb} and \emph{eda.html} notebook and notebook
-export used to perform the visual analysis.
+export used to perform the visual analysis. Only variables which are
+used in the modelling section will be visually analyzed and described.
 
 \hypertarget{significantly-right-skewed-variables}{%
 \subsubsection{Significantly right-skewed
@@ -407,6 +408,12 @@ These variables seemed like quite appropriate to me for predicting HDI
 or any other development measure, as they could potentially be huge
 differentiators between the different HDI groups.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth,height=\textheight]{./img/access_to_electricity.png}
+\caption{Percentage of population with access to electricity}
+\end{figure}
+
 \begin{itemize}
 \tightlist
 \item
@@ -415,11 +422,24 @@ differentiators between the different HDI groups.
   previously. We can see that, sure there's countries in each group with
   percentages that resemble other groups, but the difference in
   variability among groups is massive. Where the consistency of low HDI
-  countries vs very high and high HDI countries is \emph{hugely}
+  countries vs very high and high HDI countries is significantly
   different. We can see the standard deviations (and means) per group
-  follow an interesting ladder: the \(sigma_{low} \approx 0.714\),
-  \(sigma_{medium} \approx 2.532\), \(sigma_{high} \approx 4.908\),
-  \(sigma_{very high} \approx 20.382\).
+  follow an interesting ladder: \(\sigma_{low} \approx 0.714\),
+  \(\sigma_{medium} \approx 2.532\), \(\sigma_{high} \approx 4.908\),
+  \(\sigma_{very\_high} \approx 20.382\).
+\item
+  \textbf{access\_to\_electricity}: another Hugely differentiating
+  variable with similar properties to \emph{perc\_internet\_users}. We
+  can see a clear division where if the country is in the very high HDI
+  category, it will almost certainly have near full coverage in its
+  electricity supply to its population. Countries in the high category
+  are also clearly differentiated with the rest while also maintaining
+  quite high rates. Medium HDI countries show a huge variability in
+  their coverage, lower than high HDI countries but higher than low HDI
+  countries. Low HDI countries show a significantly lower but clearly
+  divided coverage with medium HDI countries.
+\item
+  \textbf{agricultural\_land}:
 \end{itemize}
 
 \end{document}
