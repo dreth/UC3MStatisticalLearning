@@ -35,18 +35,20 @@ library(foreach)
 # turn off warnings
 options(warn=-1)
 
+
 # importing the data
 df <- read.csv('./data/data.csv')
 
 # function to plot
 plots <- function(dataset, col, fw=FALSE, hist='default',
                   density='default' , bins='default',
-                  xtick_angles='default', sep=FALSE) {
+                  xtick_angles='default', sep=FALSE, savefig='default', filename='./plot.png') {
     var <- dataset %>% dplyr::select(col)
     if (bins == 'default') {bins <- rep(10,2)}
     if (xtick_angles == 'default') {xtick_angles <- rep(90,2)}
     if (hist == 'default') {hist <- c(FALSE,FALSE)}
     if (density == 'default') {density <- c(TRUE,TRUE)}
+    if (savefig == 'default') {savefig <- c(FALSE,14,14)}
 
     p1 <- dataset %>% ggplot(aes(x=var[,1])) +
         geom_boxplot() +
@@ -78,6 +80,8 @@ plots <- function(dataset, col, fw=FALSE, hist='default',
         grid.arrange(p1,p2, nrow=2)
         grid.arrange(p3,p4, nrow=2)}
     else {grid.arrange(p1,p2,p3,p4, nrow=4)}
+    if (savefig[1] == TRUE) {ggsave(file=filename, width=savefig[2], height=savefig[3],
+                                 arrangeGrob(p1,p2,p3,p4, nrow=4))}
 }
 
 # Helper function to colour num. variables by cat. variables
@@ -210,8 +214,41 @@ The data cleanup and preliminary feature engineering was done in Python and the 
 
 The plots of choice for visually analyzing the variables prior to any processing has been Boxplots and Histograms/density plots all looked at individually and categorized by *hdi_cat* which is our categorical target variable (HDI).
 
-The following variables showed a similar behavior:
+Given the space constraints of this report, if a plot for a specific variable is not shown here but talked about or mentioned, it will be shown in the *eda.ipynb* and *eda.html* notebook and notebook export used to perform the visual analysis.
 
-  - *foreign_inv_inflows*:
-  - *int_tourism_receipts*
-  - *greenhouse_gas_em*
+### Significantly right-skewed variables
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.show='hide', results='hide', fig.height=14, fig.width=12}
+plots(dataset=df, col=cols[1], hist=c(TRUE,TRUE), density=c(FALSE,FALSE), xtick_angles=c(50,50) ,bins=c(30,30), fw=TRUE, sep=FALSE, savefig=c(TRUE,12,12), filename='./img/foreign_inv_inflows.png')
+```
+
+![Foreign Investment Inflows](./img/foreign_inv_inflows.png){width=60%}
+
+
+The following variables showed a similarly right-skewed shape with significant outliers:
+
+  - **foreign_inv_inflows**: Heavily right skewed, significant outliers (USA, UK, Germany, China...) etc... Given the histogram of *foreign_inv_inflows* when grouped by very high HDI vs low HDI, it would seem like the more developed a country is, the more foreign investment it should have. The grouped boxplot also shows the same trend.
+  - **int_tourism_receipts** and **int_tourism_arrivals**: Basically the same as with *foreign_inv_inflows*, we see that there's a significant tendency for higher development nations to receive significantly more tourism receipts and arrivals.
+  - **greenhouse_gas_em**: Just like with the previous two variables, fossil fuel use, meat production and economic activities like such produce huge amounts of greenhouse gases, and the more developed a country is, the more emissions it produces. However, this one is a bit less strongly inclined like the previous two. We can clearly see that there's many less developed countries with a high level of emissions. A notorious example of this is China, which is the 2nd country with the most emissions and falls under the high category of HDI, by far exceeding the emission levels of most countries with very high HDI countries.
+
+### Education variables
+
+![Years of compulsory education](./img/education_years.png){width=60%}
+
+  - **education_years**: There's a clear tendency, both shown by our grouped boxplots and grouped density plots, for very high HDI countries to have significantly longer periods compulsory education, with few exceptions in each group, however a clear tendency that peaks between 8 and 12 years of education for both high and very high HDI countries. Low and medium HDI countries could be clumped together with similar compulsory education times, but with more variability for medium HDI countries.
+  - **education_perc_gdp**: How much are countries spending on education as a percentage of their GDP is a very interesting variable, as we can see that the consistency for higher and lower spendings respectively for low and very high HDI countries is quite solid, while medium HDI countries show an incredible variability versus other groups. High HDI countries show significant variability versus that of very high and low HDI countries, however, still aligning more iwth very high HDI countries than the rest.
+
+### Other economic variables
+
+These variables might have some skewness towards more tails or longer tails than a normally distributed variable should have. Therefore they're hard to classify as particularly right or left skewed.
+
+  - **exports_perc_gdp**: This variable has a long left tail and it is right-skewed. We can see the box for medium developed countries is larger than others while very high and high HDI countries tend to have higher export amounts as percentage of GDP. Low HDI countries lag behind, as expected. It is interesting to see how medium HDI countries completely bridge the gaps between high, very high and low HDI countries in terms of exports, in the sense that there's plenty of countries with medium HDI with exports just as high as others with significantly higher HDIs.
+  - **inflation_perc**: For inflation we can see that independently of the HDI of a country, inflation could, perhaps, be an inevitable event of economic/political management or mismanagement and uncertainty. Either way, we can clearly see that the higher the HDI, the less uncertain such inflation rate will be. The boxes for medium and low HDI countries are significantly larger than very high and high therefore telling us that there's less consistency and high inflation events, while universal, are unpredictable, but less unpredictable and probably less common the higher the HDI of a country is.
+  - **gds_perc_gdp**: For gross domestic savings we can see that there's a clear difference between groups, with much more overlapping on the high end of HDI than the medium to low end of HDI. However, clearly, once again, the higher the HDI the higher the GDS. Much more variability again on those middle HDI groups (high and medium).
+  - **gross_savings_perc_gdp**: Gross savings as a percentage of GDP is an interesting variable, where the only defining feature of high and very high HDI countries being, again, relative consistency versus other groups, there might be seemingly no predictive capability in it due to the extremely lo variability of the values among groupsm however, it definitely differentiates very high and low HDI countries quite well. 
+
+### Other interesting variables
+
+These variables seemed like quite appropriate to me for predicting HDI or any other development measure, as they could potentially be huge differentiators between the different HDI groups.
+
+ - **perc_internet_users**: The percentage of internet users in each group is a surprisingly good differentiator as mentioned previously. We can see that, sure there's countries in each group with percentages that resemble other groups, but the difference in variability among groups is massive. Where the consistency of low HDI countries vs very high and high HDI countries is *hugely* different. We can see the standard deviations (and means) per group follow an interesting ladder: the $sigma_{low} \approx 0.714$, $sigma_{medium} \approx 2.532$, $sigma_{high} \approx 4.908$, $sigma_{very high} \approx 20.382$.
