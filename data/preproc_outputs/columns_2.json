@@ -1,1 +1,27 @@
-{"Time": "year", "Time Code": "year_code", "Country Name": "country_name", "Country Code": "country_code", "Foreign direct investment, net inflows (BoP, current US$)": "foreign_inv_inflows", "Exports of goods and services (% of GDP)": "exports_perc_gdp", "Inflation, consumer prices (annual %)": "inflation_perc", "Compulsory education, duration (years)": "education_years", "Government expenditure on education, total (% of GDP)": "education_perc_gdp", "Gross domestic savings (% of GDP)": "gds_perc_gdp", "Gross savings (% of GDP)": "gross_savings_perc_gdp", "International tourism, number of arrivals": "int_tourism_arrivals", "International tourism, receipts (current US$)": "int_tourism_receipts", "Individuals using the Internet (% of population)": "perc_internet_users", "Access to electricity (% of population)": "access_to_electricity", "Agricultural land (% of land area)": "agricultural_land", "Birth rate, crude (per 1,000 people)": "birth_rate", "Gross national expenditure (% of GDP)": "gne", "Mobile cellular subscriptions (per 100 people)": "mobile_subscriptions", "Mortality rate, infant (per 1,000 live births)": "infant_mort_rate", "Sex ratio at birth (male births per female births)": "sex_ratio", "Total greenhouse gas emissions (kt of CO2 equivalent)": "greenhouse_gas_em", "Urban population (% of total population)": "urban_pop_perc", "HDI": "hdi", "Human development index as a category (1-4)": "hdi_cat"}
+{
+    "Time": "year",
+    "Time Code": "year_code",
+    "Country Name": "country_name",
+    "Country Code": "country_code",
+    "Foreign direct investment, net inflows (BoP, current US$)": "foreign_inv_inflows",
+    "Exports of goods and services (% of GDP)": "exports_perc_gdp",
+    "Inflation, consumer prices (annual %)": "inflation_perc",
+    "Compulsory education, duration (years)": "education_years",
+    "Government expenditure on education, total (% of GDP)": "education_perc_gdp",
+    "Gross domestic savings (% of GDP)": "gds_perc_gdp",
+    "Gross savings (% of GDP)": "gross_savings_perc_gdp",
+    "International tourism, number of arrivals": "int_tourism_arrivals",
+    "International tourism, receipts (current US$)": "int_tourism_receipts",
+    "Individuals using the Internet (% of population)": "perc_internet_users",
+    "Access to electricity (% of population)": "access_to_electricity",
+    "Agricultural land (% of land area)": "agricultural_land",
+    "Birth rate, crude (per 1,000 people)": "birth_rate",
+    "Gross national expenditure (% of GDP)": "gne",
+    "Mobile cellular subscriptions (per 100 people)": "mobile_subscriptions",
+    "Mortality rate, infant (per 1,000 live births)": "infant_mort_rate",
+    "Sex ratio at birth (male births per female births)": "sex_ratio",
+    "Total greenhouse gas emissions (kt of CO2 equivalent)": "greenhouse_gas_em",
+    "Urban population (% of total population)": "urban_pop_perc",
+    "HDI": "hdi",
+    "Human development index as a category (1-4)": "hdi_cat"
+}

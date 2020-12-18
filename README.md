@@ -1,2 +1,3 @@
 # UC3MStatisticalLearning
-stuff done for statistical learning class in UC3M
+
+Final project for the Statistical Learning class taken at UC3M

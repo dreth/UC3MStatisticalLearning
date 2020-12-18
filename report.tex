@@ -1,0 +1,214 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Statistical Learning Final Project Plots},
+            pdfauthor={Daniel Alonso},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{xcolor}
+
+\title{Statistical Learning Final Project Plots}
+\author{Daniel Alonso}
+\date{December 19th, 2020}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\newpage
+
+\hypertarget{dataset-of-choice}{%
+\section{Dataset of choice}\label{dataset-of-choice}}
+
+For this project I decided to pick a custom-built dataset obtained from
+the \href{https://databank.worldbank.org/home.aspx}{World bank
+Databank}, specifically the
+\href{https://databank.worldbank.org/source/world-development-indicators}{World
+Development Indicators database}. This is the ``primary World Bank
+collection of development indicators'' as stated on the database
+description. It has lots of economic, education, energy use, and
+population specific metrics.
+
+I find demographic data fascinating, and I think this dataset will be
+quite good for predicting country development measures along with
+providing quite interesting and relevant information.
+
+\hypertarget{variables}{%
+\subsection{Variables}\label{variables}}
+
+\large
+
+NOTE: \normalsize
+
+\textbf{\textcolor{blue}{blue}} = used for training/predicting
+
+\textbf{\textcolor{red}{red}} = target variable
+
+\textbf{\textcolor{green}{green}} = ID variables
+
+\textbf{\textcolor{violet}{purple}} = variables excluded as either they
+were \emph{components} of HDI or they were 100\% correlated to another
+variable (like GNI/GDP, which are both 100\% correlated and GNI is a
+component of HDI)
+
+\begin{itemize}
+\tightlist
+\item
+  \textcolor{green}{\textbf{year}}: year the data was obtained in
+\item
+  \textcolor{green}{\textbf{year\_code}}: code for the year as the world
+  bank databank sets it
+\item
+  \textcolor{green}{\textbf{country\_name}}: name of the country
+\item
+  \textcolor{green}{\textbf{country\_code}}: alpha-3 ISO 3166 code for
+  the country
+\item
+  \textcolor{blue}{\textbf{foreign\_inv\_inflows}}: Foreign direct
+  investment, net inflows (BoP, current US\$)
+\item
+  \textcolor{blue}{\textbf{exports\_perc\_gdp}}: Exports of goods and
+  services (as a \% of GDP)
+\item
+  \textcolor{blue}{\textbf{inflation\_perc}}: Inflation, consumer prices
+  (annual \%)
+\item
+  \textcolor{blue}{\textbf{education\_years}}: Compulsory education,
+  duration (years)
+\item
+  \textcolor{blue}{\textbf{education\_perc\_gdp}}: Government
+  expenditure on education, total (as a \% of GDP)
+\item
+  \textcolor{blue}{\textbf{gds\_perc\_gdp}}: Gross domestic savings (as
+  a \% of GDP)
+\item
+  \textcolor{blue}{\textbf{gross\_savings\_perc\_gdp}}: Gross savings
+  (as a \% of GDP)
+\item
+  \textcolor{blue}{\textbf{int\_tourism\_arrivals}}: International
+  tourism, number of arrivals
+\item
+  \textcolor{blue}{\textbf{int\_tourism\_receipts}}: International
+  tourism, receipts (in current US\$)
+\item
+  \textcolor{blue}{\textbf{perc\_internet\_users}}: Individuals using
+  the Internet (as a \% of population)
+\item
+  \textcolor{blue}{\textbf{access\_to\_electricity}}: Access to
+  electricity (\% of population)
+\item
+  \textcolor{blue}{\textbf{agricultural\_land}}: Agricultural land (\%
+  of land area)
+\item
+  \textcolor{blue}{\textbf{birth\_rate}}: Birth rate, crude (per 1,000
+  people)
+\item
+  \textcolor{blue}{\textbf{gne}}: Gross national expenditure (\% of GDP)
+\item
+  \textcolor{blue}{\textbf{mobile\_subscriptions}}: Mobile cellular
+  subscriptions (per 100 people)
+\item
+  \textcolor{blue}{\textbf{infant\_mort\_rate}}: Mortality rate, infant
+  (per 1,000 live births)
+\item
+  \textcolor{blue}{\textbf{sex\_ratio}}: Sex ratio at birth (male births
+  per female births)
+\item
+  \textcolor{blue}{\textbf{greenhouse\_gas\_em}}: Total greenhouse gas
+  emissions (kt of CO2 equivalent)
+\item
+  \textcolor{blue}{\textbf{urban\_pop\_perc}}: Urban population (\% of
+  total population)
+\item
+  \textcolor{red}{\textbf{hdi}}: human development index
+\item
+  \textcolor{red}{\textbf{hdi\_cat}}: Human development index as a
+  category
+\item
+  \textcolor{purple}{\textbf{life\_exp}}: Life expectancy at birth,
+  total (years)
+\item
+  \textcolor{purple}{\textbf{gdp}}: GDP (current US\$)
+\item
+  \textcolor{purple}{\textbf{gni}}: GNI (current US\$)
+\item
+  \textcolor{purple}{\textbf{fertility\_rate}}: Fertility rate, total
+  (births per woman)
+\end{itemize}
+
+\newpage
+
+\hypertarget{preprocessing}{%
+\section{Preprocessing}\label{preprocessing}}
+
+The data cleanup and preliminary feature engineering was done in Python.
+
+\hypertarget{methodology-and-steps}{%
+\subsection{Methodology and steps}\label{methodology-and-steps}}
+
+1 - Prior to importing there was a search within the \emph{.csv} file
+with the following regex:
+\texttt{\textbackslash{}"\textbackslash{}s\textbackslash{}{[}{[}\textbackslash{}w\textbackslash{}S{]}\{1,\}\textbackslash{}{]}\textbackslash{}"}
+
+\end{document}

@@ -4,12 +4,11 @@ author: 'Daniel Alonso'
 date: 'December 19th, 2020'
 output: 
   pdf_document:
+    extra_dependencies: ["xcolor"]
+    pandoc_args: ["--lua-filter=color_filter.lua"]
+    md_extensions: +bracketed_spans
     toc: true
     toc_depth: 4
-  includes:
-    in_header: latex/header.tex
-    before_body: latex/before_body.tex
-    after_body: latex/after_body.tex
 ---
 
 ```{r setup, include=FALSE}
@@ -21,3 +20,65 @@ knitr::opts_chunk$set(
 )
 ```
 
+\newpage
+
+# Dataset of choice
+
+For this project I decided to pick a custom-built dataset obtained from the [World bank Databank](https://databank.worldbank.org/home.aspx), specifically the [World Development Indicators database](https://databank.worldbank.org/source/world-development-indicators). This is the "primary World Bank collection of development indicators" as stated on the database description. It has lots of economic, education, energy use, and population specific metrics.
+
+I find demographic data fascinating, and I think this dataset will be quite good for predicting country development measures along with providing quite interesting and relevant information.
+
+## Variables
+
+\large
+NOTE:
+\normalsize
+
+**\textcolor{blue}{blue}** = used for training/predicting
+
+**\textcolor{red}{red}** = target variable
+
+**\textcolor{green}{green}** = ID variables
+
+**\textcolor{violet}{purple}** = variables excluded as either they were _components_ of HDI or they were 100% correlated to another variable (like GNI/GDP, which are both 100% correlated and GNI is a component of HDI)
+
+
+- [**year**]{color="green"}: year the data was obtained in
+- [**year_code**]{color="green"}: code for the year as the world bank databank sets it
+- [**country_name**]{color="green"}: name of the country
+- [**country_code**]{color="green"}: alpha-3 ISO 3166 code for the country
+- [**foreign_inv_inflows**]{color="blue"}: Foreign direct investment, net inflows (BoP, current US$)
+- [**exports_perc_gdp**]{color="blue"}: Exports of goods and services (as a % of GDP)
+- [**inflation_perc**]{color="blue"}: Inflation, consumer prices (annual %)
+- [**education_years**]{color="blue"}: Compulsory education, duration (years)
+- [**education_perc_gdp**]{color="blue"}: Government expenditure on education, total (as a % of GDP)
+- [**gds_perc_gdp**]{color="blue"}: Gross domestic savings (as a % of GDP)
+- [**gross_savings_perc_gdp**]{color="blue"}: Gross savings (as a % of GDP)
+- [**int_tourism_arrivals**]{color="blue"}: International tourism, number of arrivals
+- [**int_tourism_receipts**]{color="blue"}: International tourism, receipts (in current US$)
+- [**perc_internet_users**]{color="blue"}: Individuals using the Internet (as a % of population)
+- [**access_to_electricity**]{color="blue"}: Access to electricity (% of population)
+- [**agricultural_land**]{color="blue"}: Agricultural land (% of land area)
+- [**birth_rate**]{color="blue"}: Birth rate, crude (per 1,000 people)
+- [**gne**]{color="blue"}: Gross national expenditure (% of GDP)
+- [**mobile_subscriptions**]{color="blue"}: Mobile cellular subscriptions (per 100 people)
+- [**infant_mort_rate**]{color="blue"}: Mortality rate, infant (per 1,000 live births)
+- [**sex_ratio**]{color="blue"}: Sex ratio at birth (male births per female births)
+- [**greenhouse_gas_em**]{color="blue"}: Total greenhouse gas emissions (kt of CO2 equivalent)
+- [**urban_pop_perc**]{color="blue"}: Urban population (% of total population)
+- [**hdi**]{color="red"}: human development index 
+- [**hdi_cat**]{color="red"}: Human development index as a category
+- [**life_exp**]{color="purple"}: Life expectancy at birth, total (years)
+- [**gdp**]{color="purple"}: GDP (current US$) 
+- [**gni**]{color="purple"}: GNI (current US$)
+- [**fertility_rate**]{color="purple"}: Fertility rate, total (births per woman)
+
+\newpage
+
+# Data preprocessing
+
+The data cleanup and preliminary feature engineering was done in Python.
+
+## Methodology and steps
+
+1 - Prior to importing there was a search within the *.csv* file with the following regex: ```\s\[[\w\S]{1,}\]``` as a find and replace and removing every instance of it. This regex matches a metadata tag that the world bank uses in their dataset
