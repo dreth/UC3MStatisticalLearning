@@ -1,5 +1,5 @@
 ---
-title: 'Statistical Learning Final Project Plots'
+title: 'Statistical Learning Final Project: Predicting Country HDI'
 author: 'Daniel Alonso'
 date: 'December 19th, 2020'
 output: 
@@ -18,6 +18,88 @@ knitr::opts_chunk$set(
     comment = '#>',
     fig.path = './figures/'
 )
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# script with all the content from the EDA
+# Importing libraries
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(gridExtra)
+library(outliers)
+library(PerformanceAnalytics)
+library(foreach)
+
+# turn off warnings
+options(warn=-1)
+
+# importing the data
+df <- read.csv('./data/data.csv')
+
+# function to plot
+plots <- function(dataset, col, fw=FALSE, hist='default',
+                  density='default' , bins='default',
+                  xtick_angles='default', sep=FALSE) {
+    var <- dataset %>% dplyr::select(col)
+    if (bins == 'default') {bins <- rep(10,2)}
+    if (xtick_angles == 'default') {xtick_angles <- rep(90,2)}
+    if (hist == 'default') {hist <- c(FALSE,FALSE)}
+    if (density == 'default') {density <- c(TRUE,TRUE)}
+
+    p1 <- dataset %>% ggplot(aes(x=var[,1])) +
+        geom_boxplot() +
+        ggtitle(str_interp("${col}")) +
+        theme(axis.title.x=element_blank(),axis.text.y=element_blank())
+    p2 <- dataset %>% ggplot(aes(x=var[,1], fill=hdi_cat)) +
+        geom_boxplot() +
+        ggtitle(str_interp("${col} grouped by HDI")) +
+        theme(axis.title.x=element_blank(),axis.text.y=element_blank())
+    p3 <- dataset %>% ggplot(aes(x=var[,1])) +
+        ggtitle(str_interp("${col}")) +
+        theme(axis.title.x=element_blank(),
+                axis.text.x = element_text(angle = xtick_angles[1]))
+    p4 <- dataset %>% ggplot(aes(x=var[,1])) +
+        ggtitle(str_interp("${col} by HDI group")) +
+        theme(axis.title.x=element_blank(),
+                axis.text.x = element_text(angle = xtick_angles[2]))
+    if (hist[1] == TRUE) {
+        p3 <- p3 + geom_histogram(aes(y=..density..),bins=bins[1])}
+    if (hist[2] == TRUE) {
+        p4 <- p4 + geom_histogram(show.legend = FALSE,bins=bins[2],
+                                  aes(fill=hdi_cat,y=..density..))}
+    if (density[1] == TRUE) {
+        p3 <- p3 + geom_density()}
+    if (density[2] == TRUE) {
+        p4 <- p4 + geom_density(aes(group=hdi_cat,colour=hdi_cat,fill=hdi_cat))}
+    if (fw == TRUE) {p4 <- p4 + facet_wrap(~hdi_cat, nrow = 1)}
+    if (sep == TRUE) {
+        grid.arrange(p1,p2, nrow=2)
+        grid.arrange(p3,p4, nrow=2)}
+    else {grid.arrange(p1,p2,p3,p4, nrow=4)}
+}
+
+# Helper function to colour num. variables by cat. variables
+colors <- function(cat_var, colors_vector) {
+    kleuren <- as.numeric(as.factor(cat_var))
+    foreach (i=1:length(kleuren), kleur=kleuren) %do% {
+        kleuren[i] = colors_vector[kleur]
+    }
+    return(kleuren)
+}
+
+# setting colnames for variables to use in the analysis
+cols = names(df)
+cols = cols[6:(length(cols)-2)]
+
+# Selecting colours per HDI
+color_1 <- "blueviolet"
+color_2 <- "red"
+color_3 <- "black"
+color_4 <- "green"
+palette <- c(color_1,color_2,color_3,color_4)
+hdi_colours <- colors(df$hdi_cat,palette)
 ```
 
 \newpage
@@ -120,3 +202,16 @@ The data cleanup and preliminary feature engineering was done in Python and the 
   \item The data is then imported in an R cell and a MICE imputation is performed using the 'cart' method with m = 5 in order to impute the very few missing values remaining.
 \end{enumerate}
 
+\newpage
+
+# Exploratory Data Analysis
+
+## Looking at variables by themselves
+
+The plots of choice for visually analyzing the variables prior to any processing has been Boxplots and Histograms/density plots all looked at individually and categorized by *hdi_cat* which is our categorical target variable (HDI).
+
+The following variables showed a similar behavior:
+
+  - *foreign_inv_inflows*:
+  - *int_tourism_receipts*
+  - *greenhouse_gas_em*

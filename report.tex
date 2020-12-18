@@ -29,7 +29,7 @@
 }
 \usepackage{hyperref}
 \hypersetup{
-            pdftitle={Statistical Learning Final Project Plots},
+            pdftitle={Statistical Learning Final Project: Predicting Country HDI},
             pdfauthor={Daniel Alonso},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -65,7 +65,7 @@
 
 \usepackage{xcolor}
 
-\title{Statistical Learning Final Project Plots}
+\title{Statistical Learning Final Project: Predicting Country HDI}
 \author{Daniel Alonso}
 \date{December 19th, 2020}
 
@@ -262,5 +262,31 @@ and the imputation was then done in R within the same Jupyter Notebook
 
   \item The data is then imported in an R cell and a MICE imputation is performed using the 'cart' method with m = 5 in order to impute the very few missing values remaining.
 \end{enumerate}
+
+\newpage
+
+\hypertarget{exploratory-data-analysis}{%
+\section{Exploratory Data Analysis}\label{exploratory-data-analysis}}
+
+\hypertarget{looking-at-variables-by-themselves}{%
+\subsection{Looking at variables by
+themselves}\label{looking-at-variables-by-themselves}}
+
+The plots of choice for visually analyzing the variables prior to any
+processing has been Boxplots and Histograms/density plots all looked at
+individually and categorized by \emph{hdi\_cat} which is our categorical
+target variable (HDI).
+
+The following variables showed a similar behavior:
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{foreign\_inv\_inflows}:
+\item
+  \emph{int\_tourism\_receipts}
+\item
+  \emph{greenhouse\_gas\_em}
+\end{itemize}
 
 \end{document}
