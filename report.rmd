@@ -353,7 +353,6 @@ When plotting a *pairs* plot (scatter plots) between the variables when grouped 
 # Modelling
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
-# importing libraries
 df = read.csv('./data/data.csv')
 
 # vars
