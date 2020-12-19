@@ -266,4 +266,82 @@ plots(dataset=df, col=col, hist=c(TRUE,TRUE), density=c(FALSE,FALSE), xtick_angl
 
   - **perc_internet_users**: The percentage of internet users in each group is a surprisingly good differentiator as mentioned previously. We can see that, sure there's countries in each group with percentages that resemble other groups, but the difference in variability among groups is massive. Where the consistency of low HDI countries vs very high and high HDI countries is significantly different. We can see the standard deviations (and means) per group follow an interesting ladder: $\sigma_{low} \approx 0.714$, $\sigma_{medium} \approx 2.532$, $\sigma_{high} \approx 4.908$, $\sigma_{very\_high} \approx 20.382$.
   - **access_to_electricity**: another Hugely differentiating variable with similar properties to *perc_internet_users*. We can see a clear division where if the country is in the very high HDI category, it will almost certainly have near full coverage in its electricity supply to its population. Countries in the high category are also clearly differentiated with the rest while also maintaining quite high rates. Medium HDI countries show a huge variability in their coverage, lower than high HDI countries but higher than low HDI countries. Low HDI countries show a significantly lower but clearly divided coverage with medium HDI countries.
-  - **agricultural_land**: 
+  - **agricultural_land**: Agricultural land is an interesting variable that might not contribute a great deal to classifying, however, it is interesting to visualize how lower HDI countries tend to have a significantly higher percentage of agricultural land. However the rest of the variables all hover around the same values.
+  - **birth_rate**: Birth rate is a clearly defining variable, where we can see the lower HDI countries rise above the rest, along with the higher HDI countries jumping way down. Most very high to high HDI countries have already experienced a population growth plateau where the birth rate goes down significantly and usually either stays between 0 and 15 or very slightly above it (as it is necessary for demographic sustainability).
+  - **gne**: Gross national expenditure shows slightly lower values for very high HDI countries than the rest of groups, with higher variability for high HDI countries and low to medium HDI countries slightly higher. The general histogram for this value shows a long left tail with a normal-like distribution.
+  - **mobile_subscriptions**: An amazingly interesting variable with very similar properties to that of access to electricity and percentage of internet users. We see a very clear spread where the HDI groups are very clearly separated with very high HDI having an incredibly high variability while still being significantly higher than the rest of groups and the high HDI group lagging surprisingly behind but still a lot higher than low and medium HDI countries. The variable is quite right-skewed with most of the countries clumping around the low-medium area as there isn't an incredibly large difference between low and medium HDI countries for this one.
+  -**infant_mort_rate**: Quite left skewed as both high and very high HDI countries have most of their values closer to zero while low and medium HDI countries have a much larger spread with low HDI countries taking the top position given the poverty conditions. Medium HDI countries lag behind low HDI countries while still maintaining a really high infant mortality rate in general. The variable also clearly defines groups and might be quite good at classifying.
+  -**sex_ratio**: seemingly somewhat normally distributed with a long left tail. However quite surprisingly well defined for very high and high HDI countries. The differences between groups are interesting to see but maybe not quite as differentiating as other variables under this section. 
+  -**urban_pop_perc**: Population of people living in urban areas is a quite spread out variable as we know the more developed a country is, the more its population tends to live in urban areas. Urban areas are usually higher income areas and tend to offer more opportunities for workers, therefore, highly developed nations, as it is clear, tend to have quite good job offerings in urban areas. We clearly see the groupings here, very high HDI countries have the largest urban populations, while low to medium HDI countries have the lowest. Interestingly so, low and medium HDI groups are not as well separated.
+
+## Correlation matrix
+
+This correlation matrix was constructed by calculating the correlation coefficient for the variables using *Kendall*, *Spearman* and *Pearson* correlation coefficients and then imputting the values into a dataframe where only the highest correlation of the three calculated is added. This way we are able to really illustrate how correlated the variables truly are. 
+
+The idea came from observing significant differences between correlation calculated for a few pairs of variables, where the correlation coefficients nearly doubled when moving from *Pearson* to *Spearman* correlation coefficients.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+methods = c('kendall','spearman','pearson')
+corr_mat = matrix(rep(0,(length(cols)^2)*4), nrow=length(cols)^2)
+corr_mat = corr_mat %>% data.frame() %>% setNames(c('var1','var2','coef','corr_type'))
+cnt = 0
+for (i in 1:length(cols)) {
+    for (j in 1:length(cols)) {
+        cnt = cnt + 1
+        comb1 <- df %>% select(cols[i])
+        comb2 <- df %>% select(cols[j])
+        maximum_cor = 0
+        method_used = ''
+        for (method in methods) {
+            correl <- cor(comb1[,1],comb2[,1], method=method)
+            if (abs(correl) > abs(maximum_cor)) {
+                maximum_cor <- correl
+                method_used = method
+            }
+        }
+        corr_mat$coef[cnt] = maximum_cor
+        corr_mat$var1[cnt] = cols[i]
+        corr_mat$var2[cnt] = cols[j]
+        corr_mat$corr_type[cnt] = method_used
+    }
+}
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.show='hide', results='hide', fig.height=12, fig.width=12}
+corr_mat %>% ggplot(aes(var1, var2, fill=coef)) +
+                 geom_tile() +
+                 geom_text(aes(label=round(coef,2))) +
+                 scale_fill_gradient(low="red", high="blue", limits=c(-1,1))+
+                 theme( axis.text.x = element_text(angle = 70, vjust = 1, size = 12, hjust = 1),
+                        axis.title.x = element_blank(),
+                        axis.title.y = element_blank(),
+                        panel.grid.major = element_blank(),
+                        panel.border = element_blank(),
+                        panel.background = element_blank(),
+                        axis.ticks = element_blank()) +
+                ggsave(file='./img/correl_heatmap.png')
+
+```
+
+\newpage
+
+![Correlation heatmap](./img/correl_heatmap.png){width=63%}
+
+## Analysis
+
+Looking at the correlations we highlight some important details:
+
+- **int_tourism_receipts** and **int_tourism_arrivals** are extremely highly correlated at around *0.9*. These consideration will be looked at later on as they may or may not provide the model with interesting information when both are included in it.
+- **access_to_electricity** and **perc_internet_users** are quite highly correlated at around *0.82* along with **perc_internet_users** and **mobile_subscriptions** at around *0.87* which also showed very similar trends in the individual variable analysis. 
+- **perc_internet_users** along with **access_to_electricity** and **infant_mort_rate**, both pairs with *-0.9* and *-0.87* respectively. The higher the infant mortality rate, the lower the percentage of internet users and people with access to electricity.
+- **infant_mort_rate** and **birth_rate** at around *0.87* which is also quite high.
+
+There's plenty of other interesting correlations to look at, however the general idea is that there's quite high correlation among key variables. Later on we will see whether this hurts the model in general or not.
+
+When plotting a *pairs* plot (scatter plots) between the variables when grouped by HDI group, we see that there's a clear distinction similar to what we could appreciate in the boxplots, there's clear separation between groups in several of the plots. 
+
+\newpage
+
+# Modelling
+
+## 
