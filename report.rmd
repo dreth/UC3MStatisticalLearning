@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 # script with all the content from the EDA
 # Importing libraries
@@ -31,6 +30,15 @@ library(gridExtra)
 library(outliers)
 library(PerformanceAnalytics)
 library(foreach)
+library(MASS)
+library(e1071) 
+library(VGAM)
+library(caret)
+library(klaR)
+library(arm)
+library(caTools)
+library(stepPlr)
+library(LiblineaR)
 
 # turn off warnings
 options(warn=-1)
@@ -288,8 +296,8 @@ cnt = 0
 for (i in 1:length(cols)) {
     for (j in 1:length(cols)) {
         cnt = cnt + 1
-        comb1 <- df %>% select(cols[i])
-        comb2 <- df %>% select(cols[j])
+        comb1 <- df %>% dplyr::select(cols[i])
+        comb2 <- df %>% dplyr::select(cols[j])
         maximum_cor = 0
         method_used = ''
         for (method in methods) {
@@ -332,11 +340,11 @@ corr_mat %>% ggplot(aes(var1, var2, fill=coef)) +
 Looking at the correlations we highlight some important details:
 
 - **int_tourism_receipts** and **int_tourism_arrivals** are extremely highly correlated at around *0.9*. These consideration will be looked at later on as they may or may not provide the model with interesting information when both are included in it.
-- **access_to_electricity** and **perc_internet_users** are quite highly correlated at around *0.82* along with **perc_internet_users** and **mobile_subscriptions** at around *0.87* which also showed very similar trends in the individual variable analysis. 
+- **access_to_electricity** and **perc_internet_users** are quite highly correlated at around *0.82* along with **perc_internet_users** and **mobile_subscriptions** at around *0.87* which also showed very similar trends in the individual variable analysis.  
 - **perc_internet_users** along with **access_to_electricity** and **infant_mort_rate**, both pairs with *-0.9* and *-0.87* respectively. The higher the infant mortality rate, the lower the percentage of internet users and people with access to electricity.
 - **infant_mort_rate** and **birth_rate** at around *0.87* which is also quite high.
 
-There's plenty of other interesting correlations to look at, however the general idea is that there's quite high correlation among key variables. Later on we will see whether this hurts the model in general or not.
+There's plenty of other interesting correlations to look at, however the general idea is that there's quite high correlation among some key variables. This makes a lot of sense, however, given how well some of these variables separate groups, this might not be a particular problem when predicting. Later on we will see whether this hurts the model in general or not.
 
 When plotting a *pairs* plot (scatter plots) between the variables when grouped by HDI group, we see that there's a clear distinction similar to what we could appreciate in the boxplots, there's clear separation between groups in several of the plots. 
 
@@ -344,4 +352,233 @@ When plotting a *pairs* plot (scatter plots) between the variables when grouped 
 
 # Modelling
 
-## 
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+# importing libraries
+df = read.csv('./data/data.csv')
+
+# vars
+vars = names(df)
+# training vars
+train = vars[6:(length(vars)-2)]
+train = df %>% dplyr::select(train)
+
+# target var
+target = vars[length(vars)]
+target = df %>% dplyr::select(target)
+target$hdi_cat <- as.factor(target$hdi_cat)
+
+# leaving a dataset with everything included except IDs
+data <- cbind(train,target)
+```
+
+All models were prepared and ran in R using 3 repeats of 10-fold cross validation:
+
+\footnotesize
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+control <- trainControl(method = "repeatedcv",
+                        repeats = 3,
+                        number = 10 )
+```
+
+\normalsize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+# LDA
+ldafit <- train(hdi_cat ~ ., 
+                method = "lda", 
+                data = data,
+                preProcess = c("center", "scale"),
+                metric = "Accuracy",
+                trControl = control)
+
+ldapred <- predict(ldafit, data)
+ldacm <- confusionMatrix(ldapred, data$hdi_cat)
+
+# LR
+lrfit <- train(hdi_cat ~ ., 
+               method = "glmnet",
+               family = "multinomial",
+               data = data,
+               metric = "Accuracy",
+               preProcess = c("center","scale"),
+               tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), 
+                                      lambda = seq(0, .1, 0.01)),
+               trControl = control)
+
+lrpred <- predict(lrfit, data)
+lrcm <- confusionMatrix(lrpred, data$hdi_cat)
+
+# QDA
+qdafit <- train(hdi_cat ~ ., 
+                method = "qda", 
+                data = data,
+                preProcess = c("center", "scale"),
+                metric = "Accuracy",
+                trControl = control)
+
+qdapred <- predict(qdafit, data)
+qdacm <- confusionMatrix(qdapred, data$hdi_cat)
+
+# KNN
+knnfit <- train(hdi_cat ~ ., 
+                method = "knn", 
+                data = data,
+                preProcess = c("center", "scale"),
+                metric = "Accuracy",
+                trControl = control)
+
+knnpred <- predict(knnfit, data)
+knncm <- confusionMatrix(knnpred, data$hdi_cat)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=10, fig.show='hide'}
+ldaimp <- varImp(ldafit, scale = F)
+lrimp <- varImp(lrfit, scale = F)
+knnimp <- varImp(knnfit, scale = F)
+qdaimp <- varImp(qdafit, scale = F)
+par(mfrow=c(2,2))
+p1 <- ggplot(ldaimp, scales = list(y = list(cex = .95))) + ggtitle("LDA Var. Imp.")
+p2 <- ggplot(lrimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
+p3 <- ggplot(knnimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
+p4 <- ggplot(qdaimp, scales = list(y = list(cex = .95))) + ggtitle("QDA Var. Imp.")
+ggsave(file='./img/variable_importance_models.png', width=12, height=14,
+                                 arrangeGrob(p1,p2,p3,p4, nrow=2))
+```
+
+
+## Method 1: Linear Discriminant Analysis
+
+LDA is a generalization of fisher's linear discriminant. A method used to obtain a linear combination of deatures that classifies elements in two or more groups. 
+
+For our LDA model we used the following parametrization:
+
+\footnotesize
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+ldafit <- train(hdi_cat ~ ., method = "lda", data = data, preProcess = c("center", "scale"),
+                tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), lambda = seq(0, .1, 0.01)),
+                metric = "Accuracy", trControl = control)
+```
+
+\normalsize
+
+### Confusion matrix and variable importance
+
+\footnotesize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ldacm$table
+```
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model classifies quite decently, achieving an accuracy of **~84.78%**, with a *95% confidence interval* of **(78.76%, 89.64%)**.
+
+As for variable importance we see that our LDA model uses with somewhat similarly high importance the variables *infant_mort_rate*, *access_to_electricity*, *birth_rate*, *perc_internet_users*, *mobile_subscriptions* and *urban_pop_perc* for most variables, therefore confirming what we had suspected previously, that these variables would be strong group separators.
+
+## Method 2: Logistic Regression
+
+A logistic/logit model has the purpose of modelling hte propability of a certain class or event with 2 or more categories/groups. 
+
+For our LR model we used the following parametrization:
+
+\footnotesize
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+lrfit <- train(hdi_cat ~ ., method = "glmnet", data = data, preProcess = c("center", "scale"),
+               tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), lambda = seq(0, .1, 0.01)),
+               metric = "Accuracy", trControl = control)
+```
+
+\normalsize
+
+As shown above, we performed a grid search for both hyperparameters of the model, *lambda* and *alpha* with their respective intervals between 0 and 0.1 with steps of 0.01 for *lambda* and between 0 and 2 with steps of 0.1.
+
+### Confusion matrix and variable importance
+
+\footnotesize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+lrcm$table
+```
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model classifies on par with the LDA model, achieving an accuracy of **~83.15%**, with a *95% confidence interval* of **(76.95%, 88.26%)**.
+
+The LR model seems significantly more selective with variables, essentially showing us that yes, the variables we previously suspected to be good classifying variables (*infant_mort_rate*, *access_to_electricity*, *birth_rate*, *perc_internet_users*, *mobile_subscriptions* and *urban_pop_perc*) had definitely a big role in classifying very high, high and medium HDI countries, however, this doesn't come without surprises, where a very relevant variable when classifying low HDI countries was *agricultural_land*, a variable that we didn't think would play a particularly big role in classification. However, while the model is good, it doesn't achieve the level of accuracy that we aim for (**greater than or equal to 90%**). 
+
+## Method 3: Quadratic Discriminant Analysis
+
+QDA is related to LDA where measurements per class are assumed to be normally distributed, however, it's not assumed that the covariance of each of the classes is identical.
+
+QDA seems very appropriate for our purpose given our measurements and it shows its strengths in our model summary.
+
+For our QDA model we used the following parametrization:
+
+\footnotesize
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+qdafit <- train(hdi_cat ~ ., method = "qda", data = data, preProcess = c("center", "scale"),
+                metric = "Accuracy", trControl = control)
+```
+
+\normalsize
+
+### Confusion matrix and variable importance
+
+\footnotesize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+qdacm$table
+```
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model classifies very well, never placing medium or high HDI countries 2 categories above or below and reasonably classifying countries. The model achieves an accuracy of **~92.39%**, with a *95% confidence interval* of **(87.56%, 95.78%)** which is significantly higher than our LR and LDA models.
+
+For QDA, our best performing model, we notice that the consideration of variables is near-equal to that of LDA, however, the model achieves better performance.
+
+## Method 4: K-Nearest Neighbors
+
+
+
+For our KNN model we used the following parametrization:
+
+\footnotesize
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+knnfit <- train(hdi_cat ~ ., method = "knn", data = data, preProcess = c("center", "scale"),
+                metric = "Accuracy", trControl = control)
+```
+
+\normalsize
+
+### Confusion matrix and variable importance
+
+\footnotesize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+knncm$table
+```
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model classifies worse than previous models, making several mistakes in the middle groups (high and medium), achieving an accuracy of **~77.17%**, with a *95% confidence interval* of **(70.42%, 83.03%)**.
+
+KNN variable importance strongly resembles that of LDA and QDA, and we could, perhaps, go as far as to say that for our conditions, it seems essentially identical. However, due to its performance versus the former 2, we do not use KNN for this analysis. At least not with the parametrization we have chosen. When testing using grid search we didn't really achieve a hugely significant difference in results, and even when higher, we didn't quite rival the excellent performance of QDA for our dataset.
+
+# Conclusion and final thoughts on the first part of the project
+
+This has been a highly interesting project so far, we looked at data that I personally find profoundly interesting and even culturally useful. We have found a fantasticly well performing model for our purposes and learned a lot in the process.
+
+We can conclusively say that the variables that best serve us a purpose when classifying HDI in groups are those that speak about the lifestyle and utilities of individuals in countries, things like percentage of people subscribed to a mobile data plan, or percentage of individuals with access to internet and electricity, birth rate, fertility rates, and infant mortality rate. While we obtained a sad conclusion, which is that countries with low HDI basically have the worst end of what quality of life services could be described as, we see and know that there is a lot to improve in the world.
+
+The best performing model for our analysis was QDA, while I did test several other models using similar parametrizations and such, however, either these were out of the scope of this part of the project, or they were incredibly computationally intensive.
+
+I look forward to part 2! On the next and last page the variable importance of the models is showcased.
+
+\newpage
+
+![Variable importance per model](./img/variable_importance_models.png)

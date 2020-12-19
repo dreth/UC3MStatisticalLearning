@@ -35,6 +35,46 @@
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -533,7 +573,7 @@ Looking at the correlations we highlight some important details:
   are quite highly correlated at around \emph{0.82} along with
   \textbf{perc\_internet\_users} and \textbf{mobile\_subscriptions} at
   around \emph{0.87} which also showed very similar trends in the
-  individual variable analysis.
+  individual variable analysis.\\
 \item
   \textbf{perc\_internet\_users} along with
   \textbf{access\_to\_electricity} and \textbf{infant\_mort\_rate}, both
@@ -546,8 +586,11 @@ Looking at the correlations we highlight some important details:
 \end{itemize}
 
 There's plenty of other interesting correlations to look at, however the
-general idea is that there's quite high correlation among key variables.
-Later on we will see whether this hurts the model in general or not.
+general idea is that there's quite high correlation among some key
+variables. This makes a lot of sense, however, given how well some of
+these variables separate groups, this might not be a particular problem
+when predicting. Later on we will see whether this hurts the model in
+general or not.
 
 When plotting a \emph{pairs} plot (scatter plots) between the variables
 when grouped by HDI group, we see that there's a clear distinction
@@ -558,5 +601,269 @@ separation between groups in several of the plots.
 
 \hypertarget{modelling}{%
 \section{Modelling}\label{modelling}}
+
+All models were prepared and ran in R using 3 repeats of 10-fold cross
+validation:
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{control <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"repeatedcv"}\NormalTok{,}
+                        \DataTypeTok{repeats =} \DecValTok{3}\NormalTok{,}
+                        \DataTypeTok{number =} \DecValTok{10}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\hypertarget{method-1-linear-discriminant-analysis}{%
+\subsection{Method 1: Linear Discriminant
+Analysis}\label{method-1-linear-discriminant-analysis}}
+
+LDA is a generalization of fisher's linear discriminant. A method used
+to obtain a linear combination of deatures that classifies elements in
+two or more groups.
+
+For our LDA model we used the following parametrization:
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ldafit <-}\StringTok{ }\KeywordTok{train}\NormalTok{(hdi_cat }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{method =} \StringTok{"lda"}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ data, }\DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+                \DataTypeTok{tuneGrid =} \KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{alpha =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\FloatTok{0.1}\NormalTok{), }\DataTypeTok{lambda =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{.1}\NormalTok{, }\FloatTok{0.01}\NormalTok{)),}
+                \DataTypeTok{metric =} \StringTok{"Accuracy"}\NormalTok{, }\DataTypeTok{trControl =}\NormalTok{ control)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\hypertarget{confusion-matrix-and-variable-importance}{%
+\subsubsection{Confusion matrix and variable
+importance}\label{confusion-matrix-and-variable-importance}}
+
+\footnotesize
+
+\begin{verbatim}
+#>            Reference
+#> Prediction  high low medium very high
+#>   high        48   0      7         9
+#>   low          0  29      5         0
+#>   medium       3   3     24         0
+#>   very high    1   0      0        55
+\end{verbatim}
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model
+classifies quite decently, achieving an accuracy of
+\textbf{\textasciitilde{}84.78\%}, with a \emph{95\% confidence
+interval} of \textbf{(78.76\%, 89.64\%)}.
+
+As for variable importance we see that our LDA model uses with somewhat
+similarly high importance the variables \emph{infant\_mort\_rate},
+\emph{access\_to\_electricity}, \emph{birth\_rate},
+\emph{perc\_internet\_users}, \emph{mobile\_subscriptions} and
+\emph{urban\_pop\_perc} for most variables, therefore confirming what we
+had suspected previously, that these variables would be strong group
+separators.
+
+\hypertarget{method-2-logistic-regression}{%
+\subsection{Method 2: Logistic
+Regression}\label{method-2-logistic-regression}}
+
+A logistic/logit model has the purpose of modelling hte propability of a
+certain class or event with 2 or more categories/groups.
+
+For our LR model we used the following parametrization:
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lrfit <-}\StringTok{ }\KeywordTok{train}\NormalTok{(hdi_cat }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{method =} \StringTok{"glmnet"}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ data, }\DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+               \DataTypeTok{tuneGrid =} \KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{alpha =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\FloatTok{0.1}\NormalTok{), }\DataTypeTok{lambda =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{.1}\NormalTok{, }\FloatTok{0.01}\NormalTok{)),}
+               \DataTypeTok{metric =} \StringTok{"Accuracy"}\NormalTok{, }\DataTypeTok{trControl =}\NormalTok{ control)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+As shown above, we performed a grid search for both hyperparameters of
+the model, \emph{lambda} and \emph{alpha} with their respective
+intervals between 0 and 0.1 with steps of 0.01 for \emph{lambda} and
+between 0 and 2 with steps of 0.1.
+
+\hypertarget{confusion-matrix-and-variable-importance-1}{%
+\subsubsection{Confusion matrix and variable
+importance}\label{confusion-matrix-and-variable-importance-1}}
+
+\footnotesize
+
+\begin{verbatim}
+#>            Reference
+#> Prediction  high low medium very high
+#>   high        48   0      9         8
+#>   low          0  31      5         0
+#>   medium       1   1     22         0
+#>   very high    3   0      0        56
+\end{verbatim}
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model
+classifies on par with the LDA model, achieving an accuracy of
+\textbf{\textasciitilde{}83.15\%}, with a \emph{95\% confidence
+interval} of \textbf{(76.95\%, 88.26\%)}.
+
+The LR model seems significantly more selective with variables,
+essentially showing us that yes, the variables we previously suspected
+to be good classifying variables (\emph{infant\_mort\_rate},
+\emph{access\_to\_electricity}, \emph{birth\_rate},
+\emph{perc\_internet\_users}, \emph{mobile\_subscriptions} and
+\emph{urban\_pop\_perc}) had definitely a big role in classifying very
+high, high and medium HDI countries, however, this doesn't come without
+surprises, where a very relevant variable when classifying low HDI
+countries was \emph{agricultural\_land}, a variable that we didn't think
+would play a particularly big role in classification. However, while the
+model is good, it doesn't achieve the level of accuracy that we aim for
+(\textbf{greater than or equal to 90\%}).
+
+\hypertarget{method-3-quadratic-discriminant-analysis}{%
+\subsection{Method 3: Quadratic Discriminant
+Analysis}\label{method-3-quadratic-discriminant-analysis}}
+
+QDA is related to LDA where measurements per class are assumed to be
+normally distributed, however, it's not assumed that the covariance of
+each of the classes is identical.
+
+QDA seems very appropriate for our purpose given our measurements and it
+shows its strengths in our model summary.
+
+For our QDA model we used the following parametrization:
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{qdafit <-}\StringTok{ }\KeywordTok{train}\NormalTok{(hdi_cat }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{method =} \StringTok{"qda"}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ data, }\DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+                \DataTypeTok{metric =} \StringTok{"Accuracy"}\NormalTok{, }\DataTypeTok{trControl =}\NormalTok{ control)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\hypertarget{confusion-matrix-and-variable-importance-2}{%
+\subsubsection{Confusion matrix and variable
+importance}\label{confusion-matrix-and-variable-importance-2}}
+
+\footnotesize
+
+\begin{verbatim}
+#>            Reference
+#> Prediction  high low medium very high
+#>   high        45   0      1         5
+#>   low          0  32      1         0
+#>   medium       5   0     34         0
+#>   very high    2   0      0        59
+\end{verbatim}
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model
+classifies very well, never placing medium or high HDI countries 2
+categories above or below and reasonably classifying countries. The
+model achieves an accuracy of \textbf{\textasciitilde{}92.39\%}, with a
+\emph{95\% confidence interval} of \textbf{(87.56\%, 95.78\%)} which is
+significantly higher than our LR and LDA models.
+
+For QDA, our best performing model, we notice that the consideration of
+variables is near-equal to that of LDA, however, the model achieves
+better performance.
+
+\hypertarget{method-4-k-nearest-neighbors}{%
+\subsection{Method 4: K-Nearest
+Neighbors}\label{method-4-k-nearest-neighbors}}
+
+For our KNN model we used the following parametrization:
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knnfit <-}\StringTok{ }\KeywordTok{train}\NormalTok{(hdi_cat }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{method =} \StringTok{"knn"}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ data, }\DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+                \DataTypeTok{metric =} \StringTok{"Accuracy"}\NormalTok{, }\DataTypeTok{trControl =}\NormalTok{ control)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\hypertarget{confusion-matrix-and-variable-importance-3}{%
+\subsubsection{Confusion matrix and variable
+importance}\label{confusion-matrix-and-variable-importance-3}}
+
+\footnotesize
+
+\begin{verbatim}
+#>            Reference
+#> Prediction  high low medium very high
+#>   high        43   0     11         8
+#>   low          0  30     11         0
+#>   medium       2   2     14         0
+#>   very high    7   0      0        56
+\end{verbatim}
+
+\normalsize
+
+We can see in the confusion matrix for this model that the model
+classifies worse than previous models, making several mistakes in the
+middle groups (high and medium), achieving an accuracy of
+\textbf{\textasciitilde{}77.17\%}, with a \emph{95\% confidence
+interval} of \textbf{(70.42\%, 83.03\%)}.
+
+KNN variable importance strongly resembles that of LDA and QDA, and we
+could, perhaps, go as far as to say that for our conditions, it seems
+essentially identical. However, due to its performance versus the former
+2, we do not use KNN for this analysis. At least not with the
+parametrization we have chosen. When testing using grid search we didn't
+really achieve a hugely significant difference in results, and even when
+higher, we didn't quite rival the excellent performance of QDA for our
+dataset.
+
+\hypertarget{conclusion-and-final-thoughts-on-the-first-part-of-the-project}{%
+\section{Conclusion and final thoughts on the first part of the
+project}\label{conclusion-and-final-thoughts-on-the-first-part-of-the-project}}
+
+This has been a highly interesting project so far, we looked at data
+that I personally find profoundly interesting and even culturally
+useful. We have found a fantasticly well performing model for our
+purposes and learned a lot in the process.
+
+We can conclusively say that the variables that best serve us a purpose
+when classifying HDI in groups are those that speak about the lifestyle
+and utilities of individuals in countries, things like percentage of
+people subscribed to a mobile data plan, or percentage of individuals
+with access to internet and electricity, birth rate, fertility rates,
+and infant mortality rate. While we obtained a sad conclusion, which is
+that countries with low HDI basically have the worst end of what quality
+of life services could be described as, we see and know that there is a
+lot to improve in the world.
+
+The best performing model for our analysis was QDA, while I did test
+several other models using similar parametrizations and such, however,
+either these were out of the scope of this part of the project, or they
+were incredibly computationally intensive.
+
+I look forward to part 2! On the next and last page the variable
+importance of the models is showcased.
+
+\newpage
+
+\begin{figure}
+\centering
+\includegraphics{./img/variable_importance_models.png}
+\caption{Variable importance per model}
+\end{figure}
 
 \end{document}
