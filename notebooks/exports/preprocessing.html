@@ -14274,7 +14274,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="n">import</span> <span class="n">pandas</span> <span class="n">as</span> <span class="n">pd</span>
@@ -14302,7 +14302,7 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># Importing the raw data</span>
-<span class="n">raw_data</span> <span class="o">=</span> <span class="nf">pd.read_csv</span><span class="p">(</span><span class="s">&#39;./data/raw/wb_raw_data_2.csv&#39;</span><span class="p">)</span>
+<span class="n">raw_data</span> <span class="o">=</span> <span class="nf">pd.read_csv</span><span class="p">(</span><span class="s">&#39;../data/raw/wb_raw_data_2.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14564,7 +14564,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># adding the HDI to the dataframe for the countries which we have in the wikipedia list</span>
@@ -14574,7 +14574,7 @@ a.anchor-link {
 <span class="n">for</span> <span class="n">code</span><span class="p">,</span><span class="n">hdi</span> <span class="n">in</span> <span class="nf">countries.values</span><span class="p">()</span><span class="o">:</span>
     <span class="n">df.loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Country Code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">,</span><span class="s">&#39;HDI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hdi</span>
 
-<span class="c1"># finally keepiTRUEng this dataframe</span>
+<span class="c1"># finally keeping this dataframe</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Country Code&#39;</span><span class="p">]</span><span class="nf">.isin</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="n">for</span> <span class="n">x</span> <span class="n">in</span> <span class="nf">countries.values</span><span class="p">()])]</span><span class="nf">.reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
 </pre></div>
 
@@ -14591,7 +14591,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># modifying columns that are supposed to be numeric</span>
@@ -14631,7 +14631,7 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># function to construct target variable</span>
@@ -14662,16 +14662,16 @@ a.anchor-link {
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># saving the dataset before imputing</span>
-<span class="nf">df.to_csv</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/data_before_imp_2.csv&#39;</span><span class="p">)</span>
+<span class="nf">df.to_csv</span><span class="p">(</span><span class="s">&#39;../data/preproc_outputs/data_before_imp.csv&#39;</span><span class="p">)</span>
 
 <span class="c1"># dumping the col information into a json</span>
 <span class="n">col_dict</span><span class="p">[</span><span class="s">&#39;Human development index as a category (1-4)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;hdi_cat&#39;</span>
 
-<span class="n">with</span> <span class="nf">open</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/columns_2.json&#39;</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="o">:</span>
+<span class="n">with</span> <span class="nf">open</span><span class="p">(</span><span class="s">&#39;../data/preproc_outputs/columns.json&#39;</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="o">:</span>
     <span class="nf">f.write</span><span class="p">(</span><span class="nf">json.dumps</span><span class="p">(</span><span class="n">col_dict</span><span class="p">))</span>
 </pre></div>
 
@@ -14690,7 +14690,7 @@ a.anchor-link {
 <span class="nf">library</span><span class="p">(</span><span class="n">mice</span><span class="p">)</span>
 
 <span class="c1"># reading the csv outputted earlier in the IRkernel to impute the data</span>
-<span class="n">df</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&#39;./data/preproc_outputs/data_before_imp_2.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&#39;../data/preproc_outputs/data_before_imp.csv&#39;</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">&lt;-</span> <span class="n">df</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">df</span><span class="p">))]</span>
 
 <span class="c1"># instantiating the imputer and imputing the data</span>
@@ -14698,7 +14698,7 @@ a.anchor-link {
 <span class="n">df</span> <span class="o">=</span> <span class="nf">complete</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
 
 <span class="c1"># saving csv for reference</span>
-<span class="nf">write.csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="s">&#39;./data/data_2.csv&#39;</span><span class="p">)</span>
+<span class="nf">write.csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="s">&#39;../data/data.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
