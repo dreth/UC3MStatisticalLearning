@@ -39,6 +39,10 @@ library(arm)
 library(caTools)
 library(stepPlr)
 library(LiblineaR)
+library(caTools)
+library(xgboost)
+library(plyr)
+library(RSNNS)
 
 # turn off warnings
 options(warn=-1)
@@ -350,7 +354,7 @@ When plotting a *pairs* plot (scatter plots) between the variables when grouped 
 
 \newpage
 
-# Modelling
+# Modelling: Statistical Learning
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 df = read.csv('./data/data.csv')
@@ -382,9 +386,9 @@ control <- trainControl(method = "repeatedcv",
 
 \normalsize
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=TRUE}
 # LDA
-ldafit <- train(hdi_cat ~ ., 
+ldafit <- caret::train(hdi_cat ~ ., 
                 method = "lda", 
                 data = data,
                 preProcess = c("center", "scale"),
@@ -395,7 +399,7 @@ ldapred <- predict(ldafit, data)
 ldacm <- confusionMatrix(ldapred, data$hdi_cat)
 
 # LR
-lrfit <- train(hdi_cat ~ ., 
+lrfit <- caret::train(hdi_cat ~ ., 
                method = "glmnet",
                family = "multinomial",
                data = data,
@@ -409,7 +413,7 @@ lrpred <- predict(lrfit, data)
 lrcm <- confusionMatrix(lrpred, data$hdi_cat)
 
 # QDA
-qdafit <- train(hdi_cat ~ ., 
+qdafit <- caret::train(hdi_cat ~ ., 
                 method = "qda", 
                 data = data,
                 preProcess = c("center", "scale"),
@@ -420,7 +424,7 @@ qdapred <- predict(qdafit, data)
 qdacm <- confusionMatrix(qdapred, data$hdi_cat)
 
 # KNN
-knnfit <- train(hdi_cat ~ ., 
+knnfit <- caret::train(hdi_cat ~ ., 
                 method = "knn", 
                 data = data,
                 preProcess = c("center", "scale"),
@@ -441,7 +445,7 @@ p1 <- ggplot(ldaimp, scales = list(y = list(cex = .95))) + ggtitle("LDA Var. Imp
 p2 <- ggplot(lrimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
 p3 <- ggplot(knnimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
 p4 <- ggplot(qdaimp, scales = list(y = list(cex = .95))) + ggtitle("QDA Var. Imp.")
-ggsave(file='./img/variable_importance_models.png', width=12, height=14,
+ggsave(file='./img/variable_importance_models_SL.png', width=12, height=14,
                                  arrangeGrob(p1,p2,p3,p4, nrow=2))
 ```
 
@@ -452,11 +456,11 @@ LDA is a generalization of fisher's linear discriminant. A method used to obtain
 
 For our LDA model we used the following parametrization:
 
-\footnotesize
+\tiny
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-ldafit <- train(hdi_cat ~ ., method = "lda", data = data, preProcess = c("center", "scale"),
-                tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), lambda = seq(0, .1, 0.01)),
+ldafit <- caret::train(hdi_cat ~ ., method = "lda", data = data, preProcess = c("center", "scale"),
+                tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), lambda = seq(0, 0.1, 0.01)),
                 metric = "Accuracy", trControl = control)
 ```
 
@@ -482,10 +486,10 @@ A logistic/logit model has the purpose of modelling hte propability of a certain
 
 For our LR model we used the following parametrization:
 
-\footnotesize
+\tiny
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-lrfit <- train(hdi_cat ~ ., method = "glmnet", data = data, preProcess = c("center", "scale"),
+lrfit <- caret::train(hdi_cat ~ ., method = "glmnet", data = data, preProcess = c("center", "scale"),
                tuneGrid = expand.grid(alpha = seq(0, 2, 0.1), lambda = seq(0, .1, 0.01)),
                metric = "Accuracy", trControl = control)
 ```
@@ -516,10 +520,10 @@ QDA seems very appropriate for our purpose given our measurements and it shows i
 
 For our QDA model we used the following parametrization:
 
-\footnotesize
+\tiny
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-qdafit <- train(hdi_cat ~ ., method = "qda", data = data, preProcess = c("center", "scale"),
+qdafit <- caret::train(hdi_cat ~ ., method = "qda", data = data, preProcess = c("center", "scale"),
                 metric = "Accuracy", trControl = control)
 ```
 
@@ -541,14 +545,12 @@ For QDA, our best performing model, we notice that the consideration of variable
 
 ## Method 4: K-Nearest Neighbors
 
-
-
 For our KNN model we used the following parametrization:
 
-\footnotesize
+\tiny
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-knnfit <- train(hdi_cat ~ ., method = "knn", data = data, preProcess = c("center", "scale"),
+knnfit <- caret::train(hdi_cat ~ ., method = "knn", data = data, preProcess = c("center", "scale"),
                 metric = "Accuracy", trControl = control)
 ```
 
@@ -566,7 +568,199 @@ knncm$table
 
 We can see in the confusion matrix for this model that the model classifies worse than previous models, making several mistakes in the middle groups (high and medium), achieving an accuracy of **~77.17%**, with a *95% confidence interval* of **(70.42%, 83.03%)**.
 
-KNN variable importance strongly resembles that of LDA and QDA, and we could, perhaps, go as far as to say that for our conditions, it seems essentially identical. However, due to its performance versus the former 2, we do not use KNN for this analysis. At least not with the parametrization we have chosen. When testing using grid search we didn't really achieve a hugely significant difference in results, and even when higher, we didn't quite rival the excellent performance of QDA for our dataset.
+KNN variable importance strongly resembles that of LDA and QDA, and we could, perhaps, go as far as to say that for our conditions, it seems essentially identical. However, due to its performance versus the former 2, we do not use KNN for this analysis. At least not with the parametrization we have chosen. When testing using grid search we didn't really achieve a hugely significant difference in results, and even when higher, we didn't quite rival the excellent 
+performance of QDA for our dataset.
+
+\newpage
+
+# Modelling: Machine Learning
+
+For the second modelling phase we will use machine learning models. These often provide stronger predictive/classifying performance at some extra computational cost.
+
+The focus of this part will be entirely focused on performance and increasing the accuracy and maximizing the predictive power of our chosen models, however, as overfitting could happen, I must reinforce that the main objective here is to prove how some important metrics that describe the use of technology, the environment and how other humans interact and create their offspring, all have a strong relation to how developed each respective country is.
+
+We must not separate the predictive power of the models from the reality that how society behaves and how it uses technology and its resources is strongly related to how we, today, classify countries and choose to inhabit/migrate to them/visit them and also interact with its inhabitants.
+
+A few key points:
+ - Our *trainControl* variable remains the same from the previous modelling phase, we will use 10 repeats of 3-fold cross validation for all models.
+ - Models will all be obtained using the *caret* package, which provides a very intuitive API for preparing and running models in R (as we could previously see in the modelling phase 1)
+
+## SVM with Polynomial Kernel
+
+The first model we test is Support-vector machines. This is a strong supervised learning model. My chosen variant was SVM with Polynomial Kernel. This model is quite robust at classification and it's very appropriate for our problem (as a supervised learning model), we use a polynomial kernel function as our model might be fit decently using a non-linear kernel.
+
+We tune our hyperparameters as follows:
+ - *degree*: we test polynomials degree 2, 3, 4 and 5
+ - *C*: we test costs 0.01, 0.1, 0.5 and 1
+ - *scale*: we use 2 for this hyperparameter
+
+The model is trained as follows:
+
+\tiny
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+svmfit <- caret::train(hdi_cat ~ ., 
+                method = "svmPoly", 
+                data = data,
+                preProcess = c("center", "scale"),
+                metric = "Accuracy",
+                tuneGrid = expand.grid(degree = c(2,3,4,5),
+                                       C = c(0.01,0.1,0.5,1),
+                                       scale = 2), 
+                trControl = control)
+```
+
+\normalsize
+
+Our resulting table is as follows:
+
+\tiny
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
+svmpred <- predict(svmfit, data)
+svmcm <- confusionMatrix(svmpred, data$hdi_cat)
+svmcm$table
+```
+
+\normalsize
+
+The model already has a significantly higher accuracy than any of our previous models. There's an interesting feature in it though, it predicts the high HDI group with perfect accuracy. This might be a result of this specific run, but the model has an outstanding accuracy of **94.02%** with a *95%-CI* with a lower bound of **89.56%** and an upper bound of **96.98%**.
+
+It is surprising how incredibly powerful and accurate the model is with the given data even after performing cross-validation.
+
+The worst variables variables we have for this models (according to our variable importance table) are *inflation_perc*, *gne*, *greenhouse_gas_em* and *agricultural_land*. The ones with highest importance are *infant_mort_rate*, *access_to_electricity*, *birth_rate*, *perc_internet_users* and *mobile_subscriptions*. We had previously had similar success with these variables.
+
+I tried several other SVMs (linearSVM, radialSVM, etc) and their accuracy wasn't better than the one obtained by the SVM with polynomial kernel, therefore I will move on to try other models.
+
+## Neural networks
+
+### Multi-Layer Perceptron
+
+An MLP is a type of feedforward artificial neural network. This is a very simple NN, 
+
+\tiny
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+mlpfit <- caret::train(hdi_cat ~ ., 
+                  method = "mlp", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(size=c(10,50,100,150)),
+                  trControl = control)
+```
+
+\normalsize
+
+
+\tiny
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
+mlppred <- predict(mlpfit, data)
+mlpcm <- confusionMatrix(mlppred, data$hdi_cat)
+mlpcm
+```
+
+\normalsize
+
+## Tree-based models
+
+The tree based models I've chosen are *eXtreme Gradient Boosting* and *Boosted Logistic Regression*. Both yield outstandingly good results and we could suspect both of these were, perhaps, overfitted to the data, however, this does not prevent us from making a final conclusion about how our variables relate to HDI.
+
+### eXtreme Gradient Boosting
+
+As for tree-based models, the first model we'll try will be *xgbTree*. Gradient boosting produces an ensemble prediction model composed of other tree-based models, where we optimize them utilizing a differentiable loss function.
+
+This model is well known for strong performace, we will tune our model hyperparameters as follows:
+  - *nrounds*: we will try boosting iterations of 100 and 120
+  - *max_depth*: we will try a tree depth of 6 and 9
+  - *eta*: the learning rate will be adjusted between 0.3 and 0.5 
+  - *gamma*: we will test the gamma parameter for regularization with 0 and 0.1
+  - *min_child_weight*: for the minimum leaf weight we'll try 1 and 1.2
+  - *subsample*: row sampling will be left as default: 1
+  - *colsample_bytree*: column sampling will be left as default: 1
+
+\tiny
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+xgbtreefit <- caret::train(hdi_cat ~ ., 
+                  method = "xgbTree", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nrounds = c(100,120),
+                                         max_depth = c(6,9),
+                                         eta = c(0.3, 0.5),
+                                         gamma = c(0, 0.1),
+                                         min_child_weight = c(1, 1.2),
+                                         colsample_bytree = 1,
+                                         subsample = 1),
+                  trControl = control)
+```
+
+\normalsize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
+xgbtreepred <- predict(xgbtreefit, data)
+xgbtreecm <- confusionMatrix(xgbtreepred, data$hdi_cat)
+xgbtreecm$table
+```
+
+### Boosted Logistic Regression
+
+LogitBoost is a boosting algorithm, where an AdaBoost algorithm is considered as a generalized additive model and the cost function of a logistic regression is applied. 
+
+The decision of testing this algorithm comes from the fact that it has an outrageously good accuracy with this dataset.
+
+We tune our hyperparameters as follows:
+  - *nIter*: we test number of iterations between 50 and 100 in intervals of 10.
+
+\tiny
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+logitboostfit <- caret::train(hdi_cat ~ ., 
+                  method = "LogitBoost", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nIter = seq(50,100,10)), 
+                  trControl = control)
+```
+
+\normalsize
+
+Our resulting table is as follows:
+
+\tiny
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
+logitboostpred <- predict(logitboostfit, data)
+logitboostcm <- confusionMatrix(logitboostpred, data$hdi_cat)
+logitboostcm$table
+```
+
+\normalsize
+
+We can see that this model achieves a **100%** accuracy with a *95%-CI* with a lower bound of **98.02%** and an upper bound of **100%**. 
+
+Doesn't get any better than that, does it?
+
+The worst variables variables we have for this models (according to our variable importance table) are *inflation_perc*, *gne*, *greenhouse_gas_em* and *agricultural_land*. The ones with highest importance are *infant_mort_rate*, *access_to_electricity*, *birth_rate*, *perc_internet_users* and *mobile_subscriptions*. This model is quite more selective with variables, where some variables have importance 0 for some categories and 100 for others. We can see here how strong some of these variables are at classifying HDI.
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=10, fig.show='hide'}
+svmimp <- varImp(svmfit, scale = F)
+lrimp <- varImp(lrfit, scale = F)
+knnimp <- varImp(knnfit, scale = F)
+logitboostimp <- varImp(logitboostfit, scale = F)
+par(mfrow=c(2,2))
+p1 <- ggplot(svmimp, scales = list(y = list(cex = .95))) + ggtitle("SVM Var. Imp.")
+p2 <- ggplot(lrimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
+p3 <- ggplot(knnimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
+p4 <- ggplot(logitboostimp, scales = list(y = list(cex = .95))) + ggtitle("LogitBoost Var. Imp.")
+ggsave(file='./img/variable_importance_models_ML.png', width=12, height=14,
+                                 arrangeGrob(p1,p2,p3,p4, nrow=2))
+```
 
 # Conclusion and final thoughts on the first part of the project
 
@@ -576,12 +770,9 @@ We can conclusively say that the variables that best serve us a purpose when cla
 
 The best performing model for our analysis was QDA, while I did test several other models using similar parametrizations and such, however, either these were out of the scope of this part of the project, or they were incredibly computationally intensive.
 
-I look forward to part 2! On the next and last page the variable importance of the models is showcased.
-
 \newpage
 
-![Variable importance per model](./img/variable_importance_models.png)
 
-```{bash}
+```{bash, echo=FALSE}
 pdftk "./cover page/portada.pdf" "./report.pdf" cat output "./final_report.pdf"
 ```
