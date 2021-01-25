@@ -386,7 +386,7 @@ control <- trainControl(method = "repeatedcv",
 
 \normalsize
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
 # LDA
 ldafit <- caret::train(hdi_cat ~ ., 
                 method = "lda", 
@@ -396,7 +396,7 @@ ldafit <- caret::train(hdi_cat ~ .,
                 trControl = control)
 
 ldapred <- predict(ldafit, data)
-ldacm <- confusionMatrix(ldapred, data$hdi_cat)
+ldacm <- caret::confusionMatrix(ldapred, data$hdi_cat)
 
 # LR
 lrfit <- caret::train(hdi_cat ~ ., 
@@ -410,7 +410,7 @@ lrfit <- caret::train(hdi_cat ~ .,
                trControl = control)
 
 lrpred <- predict(lrfit, data)
-lrcm <- confusionMatrix(lrpred, data$hdi_cat)
+lrcm <- caret::confusionMatrix(lrpred, data$hdi_cat)
 
 # QDA
 qdafit <- caret::train(hdi_cat ~ ., 
@@ -421,7 +421,7 @@ qdafit <- caret::train(hdi_cat ~ .,
                 trControl = control)
 
 qdapred <- predict(qdafit, data)
-qdacm <- confusionMatrix(qdapred, data$hdi_cat)
+qdacm <- caret::confusionMatrix(qdapred, data$hdi_cat)
 
 # KNN
 knnfit <- caret::train(hdi_cat ~ ., 
@@ -432,7 +432,7 @@ knnfit <- caret::train(hdi_cat ~ .,
                 trControl = control)
 
 knnpred <- predict(knnfit, data)
-knncm <- confusionMatrix(knnpred, data$hdi_cat)
+knncm <- caret::confusionMatrix(knnpred, data$hdi_cat)
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=10, fig.show='hide'}
@@ -468,7 +468,7 @@ ldafit <- caret::train(hdi_cat ~ ., method = "lda", data = data, preProcess = c(
 
 ### Confusion matrix and variable importance
 
-\footnotesize
+\tiny
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ldacm$table
@@ -500,7 +500,7 @@ As shown above, we performed a grid search for both hyperparameters of the model
 
 ### Confusion matrix and variable importance
 
-\footnotesize
+\tiny
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 lrcm$table
@@ -531,7 +531,7 @@ qdafit <- caret::train(hdi_cat ~ ., method = "qda", data = data, preProcess = c(
 
 ### Confusion matrix and variable importance
 
-\footnotesize
+\tiny
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 qdacm$table
@@ -558,7 +558,7 @@ knnfit <- caret::train(hdi_cat ~ ., method = "knn", data = data, preProcess = c(
 
 ### Confusion matrix and variable importance
 
-\footnotesize
+\tiny
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 knncm$table
@@ -582,7 +582,9 @@ The focus of this part will be entirely focused on performance and increasing th
 We must not separate the predictive power of the models from the reality that how society behaves and how it uses technology and its resources is strongly related to how we, today, classify countries and choose to inhabit/migrate to them/visit them and also interact with its inhabitants.
 
 A few key points:
+
  - Our *trainControl* variable remains the same from the previous modelling phase, we will use 10 repeats of 3-fold cross validation for all models.
+
  - Models will all be obtained using the *caret* package, which provides a very intuitive API for preparing and running models in R (as we could previously see in the modelling phase 1)
 
 ## SVM with Polynomial Kernel
@@ -590,8 +592,11 @@ A few key points:
 The first model we test is Support-vector machines. This is a strong supervised learning model. My chosen variant was SVM with Polynomial Kernel. This model is quite robust at classification and it's very appropriate for our problem (as a supervised learning model), we use a polynomial kernel function as our model might be fit decently using a non-linear kernel.
 
 We tune our hyperparameters as follows:
+
  - *degree*: we test polynomials degree 2, 3, 4 and 5
+
  - *C*: we test costs 0.01, 0.1, 0.5 and 1
+
  - *scale*: we use 2 for this hyperparameter
 
 The model is trained as follows:
@@ -618,7 +623,7 @@ Our resulting table is as follows:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
 svmpred <- predict(svmfit, data)
-svmcm <- confusionMatrix(svmpred, data$hdi_cat)
+svmcm <- caret::confusionMatrix(svmpred, data$hdi_cat)
 svmcm$table
 ```
 
@@ -636,7 +641,11 @@ I tried several other SVMs (linearSVM, radialSVM, etc) and their accuracy wasn't
 
 ### Multi-Layer Perceptron
 
-An MLP is a type of feedforward artificial neural network. This is a very simple NN, 
+An MLP is a type of feedforward artificial neural network. This is a very simple NN which only possesses an input layer, a hidden layer and an output layer.
+
+It's an appropriate and very simple NN for our task and we only tune a single hyperparameter:
+
+  - *size*: we test number of neurons in the model for the values 10, 50, 100 and 150
 
 \tiny
 
@@ -652,37 +661,49 @@ mlpfit <- caret::train(hdi_cat ~ .,
 
 \normalsize
 
+And these are our results:
 
 \tiny
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
 mlppred <- predict(mlpfit, data)
-mlpcm <- confusionMatrix(mlppred, data$hdi_cat)
-mlpcm
+mlpcm <- caret::confusionMatrix(mlppred, data$hdi_cat)
+mlpcm$table
 ```
 
 \normalsize
 
+The MLP model shows even stronger results with a near-perfect accuracy of **96.2%**, with a *95%-CI* between **92.32%** and **98.46%**. The model  is impressively good and quite fast to run. Only fails on very few instances but seems to aim higher, where the only mistakes it makes (with the exception of those for actual very high HDI countries) are usually looking up (high for very high, medium for high, etc).
+
+This model tends to prefer the same top variables as the ones tested previously. This idea keeps hinting that perhaps, HDI might not be a modern enough index to measure true country development and that we might be better off either making it a more complex index, or creating a new one altogether with similar parameters and variables, but much more updated data.
+
 ## Tree-based models
 
-The tree based models I've chosen are *eXtreme Gradient Boosting* and *Boosted Logistic Regression*. Both yield outstandingly good results and we could suspect both of these were, perhaps, overfitted to the data, however, this does not prevent us from making a final conclusion about how our variables relate to HDI.
+The tree based models I've chosen are *eXtreme Gradient Boosting* and *Boosted Logistic Regression*. Both yield outstandingly good results these are probably overfitted to the data, however, this does not prevent us from making a final conclusion about how our variables relate to HDI.
 
 ### eXtreme Gradient Boosting
 
 As for tree-based models, the first model we'll try will be *xgbTree*. Gradient boosting produces an ensemble prediction model composed of other tree-based models, where we optimize them utilizing a differentiable loss function.
 
 This model is well known for strong performace, we will tune our model hyperparameters as follows:
+
   - *nrounds*: we will try boosting iterations of 100 and 120
+
   - *max_depth*: we will try a tree depth of 6 and 9
+
   - *eta*: the learning rate will be adjusted between 0.3 and 0.5 
+
   - *gamma*: we will test the gamma parameter for regularization with 0 and 0.1
+
   - *min_child_weight*: for the minimum leaf weight we'll try 1 and 1.2
+
   - *subsample*: row sampling will be left as default: 1
+
   - *colsample_bytree*: column sampling will be left as default: 1
 
 \tiny
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide', eval=TRUE}
 xgbtreefit <- caret::train(hdi_cat ~ ., 
                   method = "xgbTree", 
                   data = data,
@@ -700,11 +721,53 @@ xgbtreefit <- caret::train(hdi_cat ~ .,
 
 \normalsize
 
+We can see our confusion matrix:
+
+\tiny
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
 xgbtreepred <- predict(xgbtreefit, data)
-xgbtreecm <- confusionMatrix(xgbtreepred, data$hdi_cat)
-xgbtreecm$table
+xgbtreecm <- caret::confusionMatrix(xgbtreepred, data$hdi_cat)
+xgbtreecm$overall
 ```
+
+\normalsize
+
+We get an absurd accuracy of **100%**, with a *95%-CI* between **98.02%** and **100%**. This clearly indicates our model is most likely overfit to the data. However, this does not prevent us from seeing which variables the model considers most important. 
+
+As the variable importance is concerned, *access_to_electricity* seems to be an extremely important variable, along with *infant_mort_rate*, *birth_rate* and *perc_internet_users*.
+
+We should perhaps attempt to fit a new *xgbTree* model using only the top 3 variables and with the same previous parametrization and check its results:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
+xgbtreefit_4 <- caret::train(hdi_cat ~ access_to_electricity + infant_mort_rate + 
+                                    birth_rate, 
+                  method = "xgbTree", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nrounds = c(100,120),
+                                         max_depth = c(6,9),
+                                         eta = c(0.3, 0.5),
+                                         gamma = c(0, 0.1),
+                                         min_child_weight = c(1, 1.2),
+                                         colsample_bytree = 1,
+                                         subsample = 1),
+                  trControl = control)
+```
+
+\tiny
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
+xgbtreepred_4 <- predict(xgbtreefit_4, data)
+xgbtreecm_4 <- caret::confusionMatrix(xgbtreepred_4, data$hdi_cat)
+xgbtreecm_4$overall
+```
+
+\normalsize
+
+And it still reaches **100%** accuracy, showing that most of the variables included in this specific model might not be necessary in order to determine HDI. However, even if they provide little information to the model vs the top ones, some might really contribute to determining how developed a country is, as shown in previous models.
+
 
 ### Boosted Logistic Regression
 
@@ -713,6 +776,7 @@ LogitBoost is a boosting algorithm, where an AdaBoost algorithm is considered as
 The decision of testing this algorithm comes from the fact that it has an outrageously good accuracy with this dataset.
 
 We tune our hyperparameters as follows:
+
   - *nIter*: we test number of iterations between 50 and 100 in intervals of 10.
 
 \tiny
@@ -735,8 +799,8 @@ Our resulting table is as follows:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=TRUE}
 logitboostpred <- predict(logitboostfit, data)
-logitboostcm <- confusionMatrix(logitboostpred, data$hdi_cat)
-logitboostcm$table
+logitboostcm <- caret::confusionMatrix(logitboostpred, data$hdi_cat)
+logitboostcm$overall
 ```
 
 \normalsize
@@ -750,25 +814,38 @@ The worst variables variables we have for this models (according to our variable
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=10, fig.show='hide'}
 svmimp <- varImp(svmfit, scale = F)
-lrimp <- varImp(lrfit, scale = F)
-knnimp <- varImp(knnfit, scale = F)
+mlpimp <- varImp(mlpfit, scale = F)
+xgbtreeimp <- varImp(xgbtreefit, scale = F)
 logitboostimp <- varImp(logitboostfit, scale = F)
 par(mfrow=c(2,2))
 p1 <- ggplot(svmimp, scales = list(y = list(cex = .95))) + ggtitle("SVM Var. Imp.")
-p2 <- ggplot(lrimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
-p3 <- ggplot(knnimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
+p2 <- ggplot(mlpimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
+p3 <- ggplot(xgbtreeimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
 p4 <- ggplot(logitboostimp, scales = list(y = list(cex = .95))) + ggtitle("LogitBoost Var. Imp.")
 ggsave(file='./img/variable_importance_models_ML.png', width=12, height=14,
                                  arrangeGrob(p1,p2,p3,p4, nrow=2))
 ```
 
-# Conclusion and final thoughts on the first part of the project
 
-This has been a highly interesting project so far, we looked at data that I personally find profoundly interesting and even culturally useful. We have found a fantasticly well performing model for our purposes and learned a lot in the process.
+# Conclusion and final thoughts
 
-We can conclusively say that the variables that best serve us a purpose when classifying HDI in groups are those that speak about the lifestyle and utilities of individuals in countries, things like percentage of people subscribed to a mobile data plan, or percentage of individuals with access to internet and electricity, birth rate, fertility rates, and infant mortality rate. While we obtained a sad conclusion, which is that countries with low HDI basically have the worst end of what quality of life services could be described as, we see and know that there is a lot to improve in the world.
+As far as interests go, I am definitely profoundly interested in this topic of measuring the level of development a country has or is undergoing. 
 
-The best performing model for our analysis was QDA, while I did test several other models using similar parametrizations and such, however, either these were out of the scope of this part of the project, or they were incredibly computationally intensive.
+Initially, I thought that, perhaps, predicting HDI was going to be the final goal of this project, however, I have realized that there could be a far more interesting task at hand (for either future me, or future someone else), and that might be to construct a new index or improve HDI.
+
+HDI is a somewhat dated measure. It was originated in the annual Human Development reports produced by the Human Development Report Office of the UNDP. The reports were launched in 1990 and had a purpose that, while noble, at the time was created with what nowadays we would consider lacklusted data.
+
+Today we measure thousands of different metrics of each country, and maybe a more modern measure could maybe improve on or even replace HDI. As a final master project idea, I'm considering taking on this task (if possible), as a new measure to classify and determine the level of development a country has, could be proven to be very useful.
+
+What HDI pretty much does nowadays is to classify countries by how developed they are, but as far as I've noticed, it doesn't seem to have much more use other than appear in the UNDP Human Development Report. The index is simply a weighted index of other measures, basically, a summary of 3-4 variables (life expectancy, mean/expected years of schooling and gross national income). These, while solid at classifying countries, might miss a few bits and pieces when it comes to accurately painting a picture of a country.
+
+And what is development anyway? From which point of view do we see it? The economy? Education? Healthcare?, perhaps we need to modernize this notion and use more modern data to do so. A more cultural/technological approach to it could be applied.
+
+A good example of a country which might see its "theoretical new HDI" slightly changed could be, for instance, Singapore, where the GNI, life expectancy and Education indexes are extraordinarily high, however, the country does not have the same freedom of speech or strict data protection regulations that countries in the EU have. This shows lack of development in legislation, as Singapore is a significantly younger nation than European states.
+
+Many of these metrics (like freedom of speech) will be a challenge to accurately construct a full picture of (in numeric data), but the task seems highly interesting to me!
+
+Anyway, the main conclusion is, the top metrics selected are incredibly powerful at predicting a country's HDI and therefore, how developed they theoretically are.
 
 \newpage
 

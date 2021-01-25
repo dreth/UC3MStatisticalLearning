@@ -222,7 +222,7 @@ p1 <- ggplot(ldaimp, scales = list(y = list(cex = .95))) + ggtitle("LDA Var. Imp
 p2 <- ggplot(lrimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
 p3 <- ggplot(knnimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
 p4 <- ggplot(qdaimp, scales = list(y = list(cex = .95))) + ggtitle("QDA Var. Imp.")
-ggsave(file='./img/variable_importance_models.png', width=12, height=14,
+ggsave(file='./img/variable_importance_models_SL.png', width=12, height=14,
                                  arrangeGrob(p1,p2,p3,p4, nrow=2))
 
 # confusion matrices
@@ -230,3 +230,104 @@ ldacm
 lrcm
 qdacm
 knncm
+
+# ML part
+# svm
+svmfit <- caret::train(hdi_cat ~ ., 
+                method = "svmPoly", 
+                data = data,
+                preProcess = c("center", "scale"),
+                metric = "Accuracy",
+                tuneGrid = expand.grid(degree = c(2,3,4,5),
+                                       C = c(0.01,0.1,0.5,1),
+                                       scale = 2), 
+                trControl = control)
+
+# svm metrics
+svmpred <- predict(svmfit, data)
+svmcm <- caret::confusionMatrix(svmpred, data$hdi_cat)
+svmcm$table
+varImp(svmfit)
+
+# MLP
+mlpfit <- caret::train(hdi_cat ~ ., 
+                  method = "mlp", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(size=c(10,50,100,150)),
+                  trControl = control)
+
+# mlp metrics
+mlppred <- predict(mlpfit, data)
+mlpcm <- caret::confusionMatrix(mlppred, data$hdi_cat)
+mlpcm$table
+varImp(mlpfit)
+
+# xgbTree
+xgbtreefit <- caret::train(hdi_cat ~ ., 
+                  method = "xgbTree", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nrounds = c(100,120),
+                                         max_depth = c(6,9),
+                                         eta = c(0.3, 0.5),
+                                         gamma = c(0, 0.1),
+                                         min_child_weight = c(1, 1.2),
+                                         colsample_bytree = 1,
+                                         subsample = 1),
+                  trControl = control)
+
+# xgbTree metrics
+xgbtreepred <- predict(xgbtreefit, data)
+xgbtreecm <- caret::confusionMatrix(xgbtreepred, data$hdi_cat)
+xgbtreecm$overall
+
+# xgbTree 2nd fit
+xgbtreefit_4 <- caret::train(hdi_cat ~ access_to_electricity + infant_mort_rate + 
+                                    birth_rate, 
+                  method = "xgbTree", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nrounds = c(100,120),
+                                         max_depth = c(6,9),
+                                         eta = c(0.3, 0.5),
+                                         gamma = c(0, 0.1),
+                                         min_child_weight = c(1, 1.2),
+                                         colsample_bytree = 1,
+                                         subsample = 1),
+                  trControl = control)
+
+# xgbTree 2nd fit metrics
+xgbtreepred_4 <- predict(xgbtreefit_4, data)
+xgbtreecm_4 <- caret::confusionMatrix(xgbtreepred_4, data$hdi_cat)
+xgbtreecm_4$overall
+
+# boosted logit
+logitboostfit <- caret::train(hdi_cat ~ ., 
+                  method = "LogitBoost", 
+                  data = data,
+                  preProcess = c("center", "scale"),
+                  metric = "Accuracy",
+                  tuneGrid = expand.grid(nIter = seq(50,100,10)), 
+                  trControl = control)
+
+# boosted logit metrics
+logitboostpred <- predict(logitboostfit, data)
+logitboostcm <- caret::confusionMatrix(logitboostpred, data$hdi_cat)
+logitboostcm$overall
+
+# varimp plots for ML part
+svmimp <- varImp(svmfit, scale = F)
+mlpimp <- varImp(mlpfit, scale = F)
+xgbtreeimp <- varImp(xgbtreefit, scale = F)
+logitboostimp <- varImp(logitboostfit, scale = F)
+par(mfrow=c(2,2))
+p1 <- ggplot(svmimp, scales = list(y = list(cex = .95))) + ggtitle("SVM Var. Imp.")
+p2 <- ggplot(mlpimp, scales = list(y = list(cex = .95))) + ggtitle("LR Var. Imp.")
+p3 <- ggplot(xgbtreeimp, scales = list(y = list(cex = .95))) + ggtitle("KNN Var. Imp.")
+p4 <- ggplot(logitboostimp, scales = list(y = list(cex = .95))) + ggtitle("LogitBoost Var. Imp.")
+ggsave(file='./img/variable_importance_models_ML.png', width=12, height=14,
+                                 arrangeGrob(p1,p2,p3,p4, nrow=2))
