@@ -1,4 +1,4 @@
-# UC3MStatisticalLearning
+# Statistical Learning (UC3M)
 
 Final project for the Statistical Learning class taken at UC3M
 
